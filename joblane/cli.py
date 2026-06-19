@@ -9,6 +9,7 @@ from .doctor import Doctor
 from .frontdoor import ingest_frontdoor_packet
 from .proof import build_proof_packet
 from .runtime import JobLaneRuntime
+from .runner import DeploymentRunner
 from .scheduler import Scheduler
 from .scorecard import Scorecard
 from .skill_export import export_openclaw_skills, install_openclaw_skills
@@ -75,6 +76,14 @@ def main() -> int:
     due.add_argument("--root", dest="root_override")
     due.add_argument("--lanes-root", default="lanes")
     due.add_argument("--now", help="ISO timestamp for deterministic due checks")
+
+    tick = sub.add_parser("tick")
+    tick.add_argument("--root", dest="root_override")
+    tick.add_argument("--lanes-root", default="lanes")
+    tick.add_argument("--fixtures-dir", default="lanes")
+    tick.add_argument("--now", help="ISO timestamp for deterministic due checks")
+    tick.add_argument("--dry-run", action="store_true")
+    tick.add_argument("--no-render", action="store_true")
 
     ingest = sub.add_parser("ingest-frontdoor")
     ingest.add_argument("--root", dest="root_override")
@@ -195,6 +204,13 @@ def main() -> int:
                     sort_keys=True,
                 )
             )
+        elif args.cmd == "tick":
+            result = DeploymentRunner(
+                rt,
+                lanes_root=args.lanes_root,
+                fixtures_dir=args.fixtures_dir,
+            ).tick(now=args.now, dry_run=args.dry_run, render=not args.no_render)
+            print(json.dumps(result.__dict__, indent=2, sort_keys=True))
         elif args.cmd == "ingest-frontdoor":
             raw = Path(args.file).read_text(encoding="utf-8") if args.file else sys.stdin.read()
             result = ingest_frontdoor_packet(rt.ledger, json.loads(raw))

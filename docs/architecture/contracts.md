@@ -20,6 +20,13 @@ kinds are `manual`, `daily`, `weekly`, and `interval_hours`. The schedule
 contract answers due/not-due with reasons from lane metadata plus the ledger's
 last run time. It does not mutate cron, launchd, or any external scheduler.
 
+## Runner
+
+The deployment runner is a one-shot local executor. A tick may run due lanes,
+render sandbox surfaces, and write a `runner_tick` receipt. It must route every
+lane through the normal runtime and must not bypass gate validation or perform
+live external effects.
+
 ## Gate
 
 A valid gate decision must:

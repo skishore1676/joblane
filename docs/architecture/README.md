@@ -11,6 +11,7 @@ JobLane has six stable nouns:
 - **Surface**: projection/input channel, never state.
 - **Surface Inbox**: durable input provenance for external adapters.
 - **Schedule**: portable lane-owned recurrence declaration.
+- **Runner**: one-shot due-lane executor that writes local proof.
 
 Providers are workers. Control is a steering layer. OpenClaw is a front door or
 worker unless a specific workflow elects it as orchestrator of record.
@@ -27,6 +28,7 @@ worker unless a specific workflow elects it as orchestrator of record.
 | Operator views | Surfaces |
 | External input provenance | Surface inbox |
 | Recurrence declaration | Lane pack schedule |
+| Scheduled execution | Deployment runner |
 | Safe steering | Control |
 
 ## One-Orchestrator Rule
@@ -78,6 +80,14 @@ the workflow.
 ## Schedules
 
 Schedules live in `lane.json` so they travel with the lane pack. The current
-runtime exposes readback through `joblane due`; it does not install cron jobs or
-start a daemon. A future deployment runner can call the same due contract and
-then run only the lanes that are due.
+runtime exposes readback through `joblane due`; it does not install cron jobs,
+launchd agents, or a resident daemon.
+
+## Deployment Runner
+
+`joblane tick` is the one-shot execution path for schedules. It evaluates due
+lanes, runs those lanes through the normal runtime, renders waiting gates and
+the board, and records a local `runner_tick` receipt. A future daemon or cron
+entry should do no more than call this command. The runner does not bypass
+gates, publish publicly, trade, send messages, mutate auth, or perform live
+external effects.

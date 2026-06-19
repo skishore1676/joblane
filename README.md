@@ -57,6 +57,7 @@ python3 -m joblane.cli companion-close <session_id>
 python3 -m joblane.cli run-all --fixtures-dir lanes
 python3 -m joblane.cli board
 python3 -m joblane.cli due
+python3 -m joblane.cli tick --fixtures-dir lanes
 python3 -m joblane.cli doctor
 python3 -m joblane.cli scorecard
 python3 -m joblane.cli proof
