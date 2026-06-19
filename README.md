@@ -18,6 +18,11 @@ around agent work: runs, artifacts, receipts, decisions, memory, and projections
 OpenClaw, Claude, Codex, deterministic scripts, or future agents can all be
 workers behind the same lane contract.
 
+Interactive work enters through companion sessions. A companion session is a
+ledger-backed conversation attached to a lane run: turns can write fast memory
+and propose slow memory, but durable promotion still requires the same
+content-bound gate path as any other lane effect.
+
 ## Current Tracer Bullets
 
 The first repo slice proves six Jobs at fixture level:
@@ -40,7 +45,10 @@ to prove that every Job can move through the same durable substrate.
 make check
 python3 -m joblane.cli run public_presence
 python3 -m joblane.cli run fitness --input lanes/fitness/fixtures/sample.json
+python3 -m joblane.cli companion-start reflection
+python3 -m joblane.cli companion-turn <session_id> --message "Remember that proof beats vibes."
 python3 -m joblane.cli decide <run_id> <gate_id> approve
+python3 -m joblane.cli companion-close <session_id>
 python3 -m joblane.cli run-all --fixtures-dir lanes
 python3 -m joblane.cli board
 python3 -m joblane.cli doctor

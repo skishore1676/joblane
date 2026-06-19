@@ -110,6 +110,25 @@ class Ledger:
                 path TEXT NOT NULL,
                 created_at TEXT DEFAULT CURRENT_TIMESTAMP
             );
+            CREATE TABLE IF NOT EXISTS companion_sessions (
+                session_id TEXT PRIMARY KEY,
+                run_id TEXT NOT NULL,
+                lane_id TEXT NOT NULL,
+                status TEXT NOT NULL,
+                opened_by TEXT NOT NULL,
+                max_turns INTEGER NOT NULL,
+                created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                closed_at TEXT
+            );
+            CREATE TABLE IF NOT EXISTS companion_turns (
+                turn_id TEXT PRIMARY KEY,
+                session_id TEXT NOT NULL,
+                turn_index INTEGER NOT NULL,
+                speaker TEXT NOT NULL,
+                message TEXT NOT NULL,
+                response_json TEXT NOT NULL,
+                created_at TEXT DEFAULT CURRENT_TIMESTAMP
+            );
             """
         )
         self.conn.commit()
@@ -216,6 +235,8 @@ class Ledger:
             "memory_candidates",
             "memory_slow",
             "surface_refs",
+            "companion_sessions",
+            "companion_turns",
         }:
             raise ValueError(f"unknown table: {table}")
         return list(self.conn.execute(f"SELECT * FROM {table} ORDER BY rowid"))
@@ -231,6 +252,8 @@ class Ledger:
             "memory_candidates",
             "memory_slow",
             "surface_refs",
+            "companion_sessions",
+            "companion_turns",
         ]
         return {
             table: int(self.conn.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0])
@@ -245,7 +268,22 @@ class Ledger:
             )
         ]
         runs = [dict(row) for row in self.conn.execute("SELECT * FROM runs ORDER BY rowid")]
-        return {"runs": runs, "waiting_gates": waiting, "counts": self.counts()}
+        sessions = [
+            dict(row)
+            for row in self.conn.execute(
+                """
+                SELECT * FROM companion_sessions
+                WHERE status = 'active'
+                ORDER BY rowid
+                """
+            )
+        ]
+        return {
+            "runs": runs,
+            "waiting_gates": waiting,
+            "active_companion_sessions": sessions,
+            "counts": self.counts(),
+        }
 
     def record_surface_ref(
         self, *, surface_ref: str, run_id: str, surface: str, content_hash: str, path: str
@@ -270,3 +308,79 @@ class Ledger:
             """
         )
 
+    def create_companion_session(
+        self,
+        *,
+        session_id: str,
+        run_id: str,
+        lane_id: str,
+        opened_by: str,
+        max_turns: int,
+    ) -> None:
+        self.conn.execute(
+            """
+            INSERT INTO companion_sessions
+            (session_id, run_id, lane_id, status, opened_by, max_turns)
+            VALUES (?, ?, ?, ?, ?, ?)
+            """,
+            (session_id, run_id, lane_id, "active", opened_by, max_turns),
+        )
+        self.conn.commit()
+
+    def get_companion_session(self, session_id: str) -> sqlite3.Row | None:
+        return self.conn.execute(
+            "SELECT * FROM companion_sessions WHERE session_id = ?",
+            (session_id,),
+        ).fetchone()
+
+    def get_companion_session_by_run(self, run_id: str) -> sqlite3.Row | None:
+        return self.conn.execute(
+            "SELECT * FROM companion_sessions WHERE run_id = ?",
+            (run_id,),
+        ).fetchone()
+
+    def companion_turn_count(self, session_id: str) -> int:
+        return int(
+            self.conn.execute(
+                "SELECT COUNT(*) FROM companion_turns WHERE session_id = ?",
+                (session_id,),
+            ).fetchone()[0]
+        )
+
+    def put_companion_turn(
+        self,
+        *,
+        turn_id: str,
+        session_id: str,
+        turn_index: int,
+        speaker: str,
+        message: str,
+        response: dict[str, Any],
+    ) -> None:
+        self.conn.execute(
+            """
+            INSERT INTO companion_turns
+            (turn_id, session_id, turn_index, speaker, message, response_json)
+            VALUES (?, ?, ?, ?, ?, ?)
+            """,
+            (
+                turn_id,
+                session_id,
+                turn_index,
+                speaker,
+                message,
+                json.dumps(response, sort_keys=True),
+            ),
+        )
+        self.conn.commit()
+
+    def close_companion_session(self, session_id: str) -> None:
+        self.conn.execute(
+            """
+            UPDATE companion_sessions
+            SET status = 'closed', closed_at = CURRENT_TIMESTAMP
+            WHERE session_id = ?
+            """,
+            (session_id,),
+        )
+        self.conn.commit()

@@ -38,6 +38,18 @@ Fast memory is append-only and gate-free. Slow memory is durable and promoted
 only by `propose -> decide`. Private or unknown sensitivity fails closed for
 publishing.
 
+## Companion Session
+
+A companion session is bounded interaction state for lanes that need more than a
+single input packet. The ledger records the session, the attached run, every
+turn, and any proposed durable memory. A companion session may write fast memory
+without a gate. It may not write slow memory directly, perform a live effect, or
+close a human gate on behalf of the human.
+
+Approving a companion memory gate promotes only the bound candidate. It does not
+close the companion session; the session remains active until explicitly closed
+or until its turn budget is exhausted.
+
 ## Surface
 
 A surface may publish a view and ingest human input. It must not authorize an

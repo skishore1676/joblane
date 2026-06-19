@@ -52,6 +52,57 @@ class CliTest(unittest.TestCase):
             self.assertEqual(status["waiting_gates"], [])
             self.assertEqual(status["counts"]["decisions"], 1)
 
+    def test_companion_cli_round_trip(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            started = json.loads(
+                subprocess.run(
+                    [
+                        sys.executable,
+                        "-m",
+                        "joblane.cli",
+                        "companion-start",
+                        "reflection",
+                        "--max-turns",
+                        "2",
+                        "--root",
+                        str(root),
+                    ],
+                    check=True,
+                    capture_output=True,
+                    text=True,
+                ).stdout
+            )
+            turn = json.loads(
+                subprocess.run(
+                    [
+                        sys.executable,
+                        "-m",
+                        "joblane.cli",
+                        "companion-turn",
+                        started["session_id"],
+                        "--message",
+                        "Remember that one orchestrator owns workflow truth.",
+                        "--root",
+                        str(root),
+                    ],
+                    check=True,
+                    capture_output=True,
+                    text=True,
+                ).stdout
+            )
+            self.assertEqual(turn["gate_id"], "companion_memory_gate_1")
+            status = json.loads(
+                subprocess.run(
+                    [sys.executable, "-m", "joblane.cli", "status", "--root", str(root)],
+                    check=True,
+                    capture_output=True,
+                    text=True,
+                ).stdout
+            )
+            self.assertEqual(status["counts"]["companion_turns"], 1)
+            self.assertEqual(status["waiting_gates"][0]["gate_id"], "companion_memory_gate_1")
+
 
 if __name__ == "__main__":
     unittest.main()

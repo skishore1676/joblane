@@ -36,6 +36,33 @@ class JobLaneRuntime:
     def status(self) -> dict[str, Any]:
         return self.ledger.status()
 
+    def start_companion_session(
+        self, *, lane_id: str, opened_by: str = "human", max_turns: int = 8
+    ) -> dict[str, Any]:
+        from .companion import start_companion_session
+
+        return start_companion_session(
+            self.ledger,
+            lane_id=lane_id,
+            opened_by=opened_by,
+            max_turns=max_turns,
+        )
+
+    def companion_turn(self, *, session_id: str, message: str, speaker: str = "human"):
+        from .companion import companion_turn
+
+        return companion_turn(
+            self.ledger,
+            session_id=session_id,
+            message=message,
+            speaker=speaker,
+        )
+
+    def close_companion_session(self, *, session_id: str) -> dict[str, Any]:
+        from .companion import close_companion_session
+
+        return close_companion_session(self.ledger, session_id=session_id)
+
     def decide_gate(self, *, run_id: str, gate_id: str, decision: str, note: str = "") -> None:
         row = self.ledger.conn.execute(
             """
@@ -84,8 +111,9 @@ class JobLaneRuntime:
         )
         self.ledger.put_receipt(receipt)
         self._apply_decision_effects(run_id=run_id, gate_id=gate_id, decision=decision, artifact=artifact)
-        terminal = "done" if decision == "approve" else "cancelled"
-        self.ledger.finish_run(run_id, terminal)
+        if self.ledger.get_companion_session_by_run(run_id) is None:
+            terminal = "done" if decision == "approve" else "cancelled"
+            self.ledger.finish_run(run_id, terminal)
 
     def _apply_decision_effects(self, *, run_id: str, gate_id: str, decision: str, artifact) -> None:
         if artifact is None:
@@ -105,7 +133,9 @@ class JobLaneRuntime:
         run = self.ledger.conn.execute("SELECT * FROM runs WHERE run_id = ?", (run_id,)).fetchone()
         lane_id = str(run["lane_id"]) if run else str(artifact.content.get("lane_id") or "")
         content = artifact.content if isinstance(artifact.content, dict) else {}
-        if gate_id in {"log_gate", "memory_gate", "frontdoor_memory_gate"}:
+        if gate_id in {"log_gate", "memory_gate", "frontdoor_memory_gate"} or gate_id.startswith(
+            "companion_memory_gate_"
+        ):
             candidate_ids = []
             if content.get("candidate_id"):
                 candidate_ids.append(str(content["candidate_id"]))

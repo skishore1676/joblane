@@ -28,6 +28,22 @@ def main() -> int:
     run_all.add_argument("--root", dest="root_override")
     run_all.add_argument("--fixtures-dir", default="lanes", help="load lanes/<id>/fixtures/sample.json when present")
 
+    companion_start = sub.add_parser("companion-start")
+    companion_start.add_argument("lane_id")
+    companion_start.add_argument("--root", dest="root_override")
+    companion_start.add_argument("--opened-by", default="human")
+    companion_start.add_argument("--max-turns", type=int, default=8)
+
+    companion_turn = sub.add_parser("companion-turn")
+    companion_turn.add_argument("session_id")
+    companion_turn.add_argument("--root", dest="root_override")
+    companion_turn.add_argument("--message", required=True)
+    companion_turn.add_argument("--speaker", default="human")
+
+    companion_close = sub.add_parser("companion-close")
+    companion_close.add_argument("session_id")
+    companion_close.add_argument("--root", dest="root_override")
+
     status = sub.add_parser("status")
     status.add_argument("--root", dest="root_override")
 
@@ -97,6 +113,33 @@ def main() -> int:
                 for lane_id in LANES
             }
             print(json.dumps(run_ids, indent=2, sort_keys=True))
+        elif args.cmd == "companion-start":
+            print(
+                json.dumps(
+                    rt.start_companion_session(
+                        lane_id=args.lane_id,
+                        opened_by=args.opened_by,
+                        max_turns=args.max_turns,
+                    ),
+                    indent=2,
+                    sort_keys=True,
+                )
+            )
+        elif args.cmd == "companion-turn":
+            result = rt.companion_turn(
+                session_id=args.session_id,
+                message=args.message,
+                speaker=args.speaker,
+            )
+            print(json.dumps(result.__dict__, indent=2, sort_keys=True))
+        elif args.cmd == "companion-close":
+            print(
+                json.dumps(
+                    rt.close_companion_session(session_id=args.session_id),
+                    indent=2,
+                    sort_keys=True,
+                )
+            )
         elif args.cmd == "status":
             print(json.dumps(rt.status(), indent=2, sort_keys=True))
         elif args.cmd == "decide":

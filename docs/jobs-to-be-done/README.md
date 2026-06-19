@@ -24,3 +24,18 @@ typed artifact with a Job-specific acceptance signal:
 - D: morning plan with time blocks, delegate, push, decline, commitments, rationale, and recall.
 - E: reflection takeaway with themes, recall, and gated durable-memory promotion.
 - F: minimal approve/skip experiment packet with failure awareness.
+
+## Interaction Shape
+
+Jobs A, C, and F can often run as one-shot packets: draft, diagnose, or approve
+the small experiment.
+
+Jobs B, D, and E usually need multi-turn context. They use companion sessions:
+
+- B captures training notes as fast memory and gates durable body history.
+- D captures intentions and planning constraints before producing commitments.
+- E captures reflection turns and gates only the lessons worth preserving.
+
+The interaction surface can change without changing this contract. A terminal,
+OpenClaw, Obsidian, Telegram, Apple Notes, or Apple Messages adapter can all
+submit turns; the ledger remains the source of truth.

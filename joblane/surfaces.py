@@ -63,6 +63,15 @@ class MarkdownSurface:
                 lines.append(f"- `{item['run_id']}` at `{item['gate_id']}`: {item['prompt']}")
         else:
             lines.append("- Nothing waiting on a human decision.")
+        lines.extend(["", "## Active Companion Sessions", ""])
+        sessions = status.get("active_companion_sessions", [])
+        if sessions:
+            for item in sessions:
+                lines.append(
+                    f"- `{item['session_id']}` · lane `{item['lane_id']}` · run `{item['run_id']}`"
+                )
+        else:
+            lines.append("- No active companion sessions.")
         lines.extend(["", "## Job Coverage", ""])
         lines.append("| Job | Score | Status |")
         lines.append("|---|---:|---|")
