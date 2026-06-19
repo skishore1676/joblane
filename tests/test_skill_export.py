@@ -4,7 +4,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from joblane.skill_export import export_openclaw_skills
+from joblane.skill_export import export_openclaw_skills, install_openclaw_skills
 
 
 class SkillExportTest(unittest.TestCase):
@@ -22,7 +22,16 @@ class SkillExportTest(unittest.TestCase):
             self.assertIn("Orchestrator of record: `joblane`", text)
             self.assertIn("proposed_memories", text)
 
+    def test_installs_openclaw_skills_to_target_dir(self) -> None:
+        repo = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as tmp:
+            paths = install_openclaw_skills(
+                lanes_root=repo / "lanes",
+                target_dir=Path(tmp) / "openclaw" / "skills",
+            )
+            self.assertEqual(len(paths), 6)
+            self.assertTrue((Path(tmp) / "openclaw" / "skills" / "joblane-reflection" / "SKILL.md").exists())
+
 
 if __name__ == "__main__":
     unittest.main()
-

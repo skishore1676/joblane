@@ -26,6 +26,32 @@ def export_openclaw_skills(
     return paths
 
 
+def install_openclaw_skills(
+    *,
+    lanes_root: Path | str = "lanes",
+    target_dir: Path | str,
+    prefix: str = "joblane-",
+) -> list[Path]:
+    """Install thin JobLane front-door skills into an OpenClaw skills directory.
+
+    This is a filesystem copy of source skill docs only. It does not restart
+    OpenClaw, mutate runtime state, or edit agent routing. Operators can point
+    it at `workspace-main/skills` when they want the source workspace to expose
+    JobLane front-door skills.
+    """
+    packs = load_lane_packs(lanes_root)
+    target = Path(target_dir)
+    target.mkdir(parents=True, exist_ok=True)
+    paths: list[Path] = []
+    for pack in packs.values():
+        skill_dir = target / f"{prefix}{pack.lane_id}"
+        skill_dir.mkdir(parents=True, exist_ok=True)
+        path = skill_dir / "SKILL.md"
+        path.write_text(_skill_text(pack), encoding="utf-8")
+        paths.append(path)
+    return paths
+
+
 def _skill_text(pack: LanePack) -> str:
     return f"""---
 name: joblane-{pack.lane_id}
@@ -62,4 +88,3 @@ Prepare a front-door packet and pass it to JobLane:
 JobLane will record fast memory immediately and route durable memory candidates
 through a human gate. The surface is a projection; the ledger remains truth.
 """
-

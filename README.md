@@ -45,6 +45,7 @@ python3 -m joblane.cli doctor
 python3 -m joblane.cli scorecard
 python3 -m joblane.cli proof
 python3 -m joblane.cli export-openclaw-skills
+python3 -m joblane.cli install-openclaw-skills --target-dir /path/to/openclaw/workspace-main/skills
 python3 -m joblane.cli status
 ```
 

@@ -10,7 +10,7 @@ from .frontdoor import ingest_frontdoor_packet
 from .proof import build_proof_packet
 from .runtime import JobLaneRuntime
 from .scorecard import Scorecard
-from .skill_export import export_openclaw_skills
+from .skill_export import export_openclaw_skills, install_openclaw_skills
 from .surfaces import MarkdownSurface
 
 
@@ -54,6 +54,11 @@ def main() -> int:
     export = sub.add_parser("export-openclaw-skills")
     export.add_argument("--lanes-root", default="lanes")
     export.add_argument("--out-dir", default="out/openclaw-skills")
+
+    install = sub.add_parser("install-openclaw-skills")
+    install.add_argument("--lanes-root", default="lanes")
+    install.add_argument("--target-dir", required=True)
+    install.add_argument("--prefix", default="joblane-")
 
     proof = sub.add_parser("proof")
     proof.add_argument("--root", default="state/proof")
@@ -120,6 +125,15 @@ def main() -> int:
         elif args.cmd == "export-openclaw-skills":
             paths = export_openclaw_skills(lanes_root=args.lanes_root, out_dir=args.out_dir)
             print(json.dumps([str(path) for path in paths], indent=2))
+        elif args.cmd == "install-openclaw-skills":
+            rt.close()
+            paths = install_openclaw_skills(
+                lanes_root=args.lanes_root,
+                target_dir=args.target_dir,
+                prefix=args.prefix,
+            )
+            print(json.dumps([str(path) for path in paths], indent=2))
+            return 0
         return 0
     finally:
         rt.close()
