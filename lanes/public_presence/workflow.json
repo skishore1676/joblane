@@ -16,6 +16,19 @@
       "content_bound": true
     }
   ],
-  "live_effects": false
+  "live_effects": false,
+  "execution": {
+    "artifact": {
+      "id": "{run_id}:publish_packet",
+      "kind": "publish_packet",
+      "content_from": "artifact"
+    },
+    "gate": {
+      "id": "taste_gate",
+      "prompt": "Approve, revise, park, or reject this draft packet.",
+      "allowed_decisions": ["approve", "revise", "park", "reject"],
+      "action": "stage_public_draft"
+    },
+    "status": "waiting"
+  }
 }
-

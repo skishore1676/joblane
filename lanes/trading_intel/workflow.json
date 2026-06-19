@@ -12,6 +12,27 @@
   "capability_policy": {
     "forbidden": ["submit_order", "cancel_order", "transfer_cash"]
   },
-  "live_effects": false
+  "live_effects": false,
+  "execution": {
+    "artifact": {
+      "id": "{run_id}:read_only_synthesis",
+      "kind": "read_only_synthesis",
+      "content_from": "artifact",
+      "sensitivity": "private"
+    },
+    "receipts": [
+      {
+        "id": "receipt:{run_id}:read_only",
+        "kind": "read_only_guard",
+        "status": "ok",
+        "summary": "Trading lane produced read-only synthesis with no trade authority.",
+        "data": {
+          "live_effect": false,
+          "read_only": true,
+          "forbidden": ["submit_order", "cancel_order", "transfer_cash"]
+        }
+      }
+    ],
+    "status": "done"
+  }
 }
-

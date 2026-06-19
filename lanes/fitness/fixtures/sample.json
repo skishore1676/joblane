@@ -10,6 +10,40 @@
     ],
     "pain_flags": []
   },
-  "today_log": "squat 190x5 RIR2; press 100x5 RIR2; row 120x8 RIR2; no pain"
+  "today_log": "squat 190x5 RIR2; press 100x5 RIR2; row 120x8 RIR2; no pain",
+  "artifact": {
+    "today": "strength maintenance during a busy week, 45 minutes",
+    "main_lifts": [
+      "squat 190 lb x5 RIR2",
+      "press 100 lb x5 RIR2",
+      "row 120 lb x8 RIR2"
+    ],
+    "structured_log": [
+      {"exercise": "squat", "load": 190, "reps": 5, "rir": 2},
+      {"exercise": "press", "load": 100, "reps": 5, "rir": 2},
+      {"exercise": "row", "load": 120, "reps": 8, "rir": 2}
+    ],
+    "pain_flags": [],
+    "progression_checks": [
+      "no pain reported; normal progression allowed",
+      "add one rep or 5 lb next time if all sets feel RIR2+"
+    ],
+    "recall": {"lane_id": "fitness", "namespace": "gym", "fast": [], "slow": [], "slow_tier_available": true},
+    "parsed_log_candidate": "squat 190x5 RIR2; press 100x5 RIR2; row 120x8 RIR2; no pain",
+    "durable_write_requires_gate": true
+  },
+  "memory_candidate": {
+    "summary": "squat 190x5 RIR2; press 100x5 RIR2; row 120x8 RIR2; no pain",
+    "sets": [
+      {"exercise": "squat", "load": 190, "reps": 5, "rir": 2},
+      {"exercise": "press", "load": 100, "reps": 5, "rir": 2},
+      {"exercise": "row", "load": 120, "reps": 8, "rir": 2}
+    ],
+    "pain_flags": [],
+    "next_lifts": [
+      "squat 190 lb x5 RIR2",
+      "press 100 lb x5 RIR2",
+      "row 120 lb x8 RIR2"
+    ]
+  }
 }
-

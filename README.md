@@ -34,7 +34,7 @@ The first repo slice proves six Jobs at fixture level:
 | Job | Lane |
 |---|---|
 | A. Public presence | `public_presence` |
-| B. Keep me strong | `fitness` |
+| B. Personal fitness | `fitness` |
 | C. Trading intelligence | `trading_intel` |
 | D. Chief of staff | `chief_of_staff` |
 | E. Memory/reflection | `reflection` |
@@ -42,6 +42,10 @@ The first repo slice proves six Jobs at fixture level:
 
 Each lane is intentionally small. The goal is not completeness yet; the goal is
 to prove that every Job can move through the same durable substrate.
+
+A lane is not registered in Python. The runtime loads `lanes/<id>/lane.json`,
+`workflow.json`, `providers.json`, and optional fixture inputs from the selected
+`--lanes-root`. Adding, removing, or adopting lanes should be folder work.
 
 ## Quickstart
 

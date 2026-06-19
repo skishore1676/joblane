@@ -8,6 +8,33 @@
   "prior_patterns": [
     "Prefer one source of truth over several compensating monitors.",
     "Protect public sends and durable memory behind explicit gates."
-  ]
+  ],
+  "fast_memory": {
+    "session_prompt": "What should persist from this week?",
+    "observations": [
+      "The architecture conversation improved once the orchestrator conflict was named.",
+      "Useful automation should reduce operator scheduling burden.",
+      "A scorecard is only useful when it measures artifact quality, not existence."
+    ]
+  },
+  "memory_candidate": {
+    "principle": "Useful automation should reduce the operator's scheduling burden.",
+    "themes": ["operator_leverage", "proof-bearing_artifacts", "single_source_of_truth", "gated_durable_memory"],
+    "source": "weekly_reflection_fixture"
+  },
+  "artifact": {
+    "prompt": "What should persist from this week?",
+    "takeaway": "Useful automation should reduce the operator's scheduling burden.",
+    "themes": ["operator_leverage", "proof-bearing_artifacts", "single_source_of_truth", "gated_durable_memory"],
+    "recall": {
+      "lane_id": "reflection",
+      "namespace": "weekly",
+      "fast": [],
+      "slow": [
+        "Prefer one source of truth over several compensating monitors.",
+        "Protect public sends and durable memory behind explicit gates."
+      ]
+    },
+    "durable_write_requires_gate": true
+  }
 }
-

@@ -6,15 +6,17 @@ from pathlib import Path
 from typing import Any
 
 from .contracts import GateDecision, Orchestrator, Receipt
+from .executor import LanePackExecutor
 from .gates import validate_decision
-from .lanes import LANES
+from .lane_packs import load_lane_pack
 from .ledger import Ledger
 from .memory import MemoryStore
 
 
 class JobLaneRuntime:
-    def __init__(self, root: Path | str = "state/local") -> None:
+    def __init__(self, root: Path | str = "state/local", *, lanes_root: Path | str = "lanes") -> None:
         self.root = Path(root)
+        self.lanes_root = Path(lanes_root)
         self.root.mkdir(parents=True, exist_ok=True)
         self.ledger = Ledger(self.root / "ledger.sqlite3")
 
@@ -22,15 +24,15 @@ class JobLaneRuntime:
         self.ledger.close()
 
     def run_lane(self, lane_id: str, inputs: dict[str, Any] | None = None) -> str:
-        if lane_id not in LANES:
-            raise ValueError(f"unknown lane: {lane_id}")
-        spec = LANES[lane_id]
+        pack = load_lane_pack(self.lanes_root / lane_id)
         run_id = f"{lane_id}:{uuid.uuid4().hex[:12]}"
-        self.ledger.start_run(run_id, lane_id, spec.job.value, Orchestrator.JOBLANE.value)
-        result = spec.handler(self.ledger, run_id, inputs or {})
+        self.ledger.start_run(run_id, lane_id, pack.job.value, Orchestrator.JOBLANE.value)
+        result = LanePackExecutor(self.ledger, root=self.root).run(
+            pack=pack,
+            run_id=run_id,
+            inputs=inputs or {},
+        )
         self.ledger.finish_run(run_id, result.status)
-        for receipt in result.receipts:
-            self.ledger.put_receipt(receipt)
         return run_id
 
     def status(self) -> dict[str, Any]:
@@ -46,6 +48,7 @@ class JobLaneRuntime:
             lane_id=lane_id,
             opened_by=opened_by,
             max_turns=max_turns,
+            lanes_root=self.lanes_root,
         )
 
     def companion_turn(self, *, session_id: str, message: str, speaker: str = "human"):
@@ -56,6 +59,7 @@ class JobLaneRuntime:
             session_id=session_id,
             message=message,
             speaker=speaker,
+            lanes_root=self.lanes_root,
         )
 
     def close_companion_session(self, *, session_id: str) -> dict[str, Any]:

@@ -17,6 +17,39 @@
       "content_bound": true
     }
   ],
-  "live_effects": false
+  "live_effects": false,
+  "execution": {
+    "memory_fast": [
+      {
+        "namespace": "weekly",
+        "key": "current_session",
+        "value_from": "fast_memory",
+        "sensitivity": "private"
+      }
+    ],
+    "memory_candidate": {
+      "namespace": "weekly",
+      "kind": "operating_principle",
+      "memory_from": "memory_candidate",
+      "sensitivity": "internal"
+    },
+    "artifact": {
+      "id": "{run_id}:memory_takeaway",
+      "kind": "memory_takeaway",
+      "content_from": "artifact",
+      "candidate_field": "candidate_id"
+    },
+    "gate": {
+      "id": "memory_gate",
+      "prompt": "Promote this reflection takeaway to durable memory?",
+      "allowed_decisions": ["approve", "reject", "revise"],
+      "action": "promote_reflection_memory"
+    },
+    "companion": {
+      "namespace": "weekly",
+      "candidate_kind": "operating_principle",
+      "candidate_sensitivity": "internal"
+    },
+    "status": "waiting"
+  }
 }
-

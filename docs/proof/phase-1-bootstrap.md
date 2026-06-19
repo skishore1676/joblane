@@ -8,6 +8,7 @@ What exists:
 - ledger, gate, memory, surface, provider, control modules
 - six Job tracer-bullet lanes
 - lane-pack metadata under `lanes/*/lane.json`
+- lane-pack execution recipes under `lanes/*/workflow.json`
 - sandbox-only local deployment example
 - doctor/readback command
 - approved-gate effect bridge for local draft staging and gated memory promotion
@@ -15,6 +16,7 @@ What exists:
 - lane-local provider defaults plus deployment provider-policy overrides
 - generic Control Tower action allowlists and validated control intents
 - deployment-owned runtime drawers outside lane source folders
+- no engine-side lane registry; runtime loads packs from `--lanes-root`
 
 Current proof commands:
 
@@ -51,4 +53,4 @@ Protected-gate statement:
 - no live public publish
 - no broker/trading mutation
 - no auth/secret mutation
-- no oldmac cutover
+- no live runtime cutover

@@ -17,6 +17,32 @@
       "content_bound": true
     }
   ],
-  "live_effects": false
+  "live_effects": false,
+  "execution": {
+    "memory_candidate": {
+      "namespace": "gym",
+      "kind": "workout_log",
+      "memory_from": "memory_candidate",
+      "sensitivity": "private"
+    },
+    "artifact": {
+      "id": "{run_id}:gym_session",
+      "kind": "gym_session",
+      "content_from": "artifact",
+      "sensitivity": "private",
+      "candidate_field": "candidate_id"
+    },
+    "gate": {
+      "id": "log_gate",
+      "prompt": "Confirm the parsed workout log before it becomes durable body memory.",
+      "allowed_decisions": ["approve", "revise", "skip"],
+      "action": "promote_gym_memory"
+    },
+    "companion": {
+      "namespace": "gym",
+      "candidate_kind": "workout_preference",
+      "candidate_sensitivity": "private"
+    },
+    "status": "waiting"
+  }
 }
-

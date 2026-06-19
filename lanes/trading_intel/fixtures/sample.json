@@ -4,6 +4,25 @@
     {"name": "strategy_cache", "status": "stale", "evidence": "fixture://strategy-cache"},
     {"name": "order_reconciliation", "status": "ok", "evidence": "fixture://orders"}
   ],
-  "health": "yellow"
+  "health": "yellow",
+  "artifact": {
+    "mode": "read_only",
+    "health": "yellow",
+    "anomalies": [
+      "strategy_cache is stale"
+    ],
+    "evidence_refs": [
+      "fixture://broker",
+      "fixture://strategy-cache",
+      "fixture://orders"
+    ],
+    "checks": [
+      {"name": "broker_snapshot", "status": "ok", "evidence": "fixture://broker"},
+      {"name": "strategy_cache", "status": "stale", "evidence": "fixture://strategy-cache"},
+      {"name": "order_reconciliation", "status": "ok", "evidence": "fixture://orders"}
+    ],
+    "forbidden": ["submit_order", "cancel_order", "transfer_cash"],
+    "trade_authority": false,
+    "next_question": "Is stale source data acceptable for today's read-only synthesis?"
+  }
 }
-

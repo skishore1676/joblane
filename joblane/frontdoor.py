@@ -2,11 +2,12 @@ from __future__ import annotations
 
 import uuid
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any
 
-from .contracts import JobArea, Orchestrator, Sensitivity
+from .contracts import Orchestrator, Sensitivity
 from .gates import make_artifact, make_gate
-from .lanes import LANES
+from .lane_packs import LanePackError, load_lane_pack
 from .ledger import Ledger
 from .memory import MemoryStore
 
@@ -24,7 +25,12 @@ class FrontDoorResult:
     gate_id: str | None
 
 
-def ingest_frontdoor_packet(ledger: Ledger, packet: dict[str, Any]) -> FrontDoorResult:
+def ingest_frontdoor_packet(
+    ledger: Ledger,
+    packet: dict[str, Any],
+    *,
+    lanes_root: Path | str = "lanes",
+) -> FrontDoorResult:
     """Ingest a packet from a conversational front door.
 
     This is the OpenClaw/Jarvis seam: the conversational agent can send observed
@@ -32,7 +38,9 @@ def ingest_frontdoor_packet(ledger: Ledger, packet: dict[str, Any]) -> FrontDoor
     slow memory directly.
     """
     lane_id = str(packet.get("lane_id") or "")
-    if lane_id not in LANES:
+    try:
+        pack = load_lane_pack(Path(lanes_root) / lane_id)
+    except LanePackError as exc:
         raise FrontDoorPacketError(f"unknown lane_id: {lane_id!r}")
     requested_by = str(packet.get("requested_by") or "").strip()
     if not requested_by:
@@ -42,9 +50,8 @@ def ingest_frontdoor_packet(ledger: Ledger, packet: dict[str, Any]) -> FrontDoor
     if not isinstance(observations, list) or not isinstance(proposals, list):
         raise FrontDoorPacketError("observations and proposed_memories must be lists")
 
-    spec = LANES[lane_id]
     run_id = f"frontdoor:{lane_id}:{uuid.uuid4().hex[:12]}"
-    ledger.start_run(run_id, lane_id, spec.job.value, Orchestrator.JOBLANE.value)
+    ledger.start_run(run_id, lane_id, pack.job.value, Orchestrator.JOBLANE.value)
     memory = MemoryStore(ledger, lane_id)
 
     fast_ids: list[str] = []
@@ -114,4 +121,3 @@ def _sensitivity(value: Any) -> Sensitivity:
         return Sensitivity(str(value or Sensitivity.INTERNAL.value))
     except Exception:
         return Sensitivity.UNKNOWN
-

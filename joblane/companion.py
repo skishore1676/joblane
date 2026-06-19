@@ -2,20 +2,14 @@ from __future__ import annotations
 
 import uuid
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any
 
-from .contracts import Decision, JobArea, Orchestrator, Sensitivity
+from .contracts import Decision, Orchestrator, Sensitivity
 from .gates import make_artifact, make_gate
-from .lanes import LANES
+from .lane_packs import LanePack, LanePackError, load_lane_pack
 from .ledger import Ledger
 from .memory import MemoryStore
-
-
-COMPANION_LANES = {
-    "fitness": ("gym", "workout_preference"),
-    "chief_of_staff": ("intentions", "operating_preference"),
-    "reflection": ("weekly", "operating_principle"),
-}
 
 
 class CompanionError(ValueError):
@@ -39,15 +33,14 @@ def start_companion_session(
     lane_id: str,
     opened_by: str = "human",
     max_turns: int = 8,
+    lanes_root: Path | str = "lanes",
 ) -> dict[str, Any]:
-    if lane_id not in COMPANION_LANES:
-        raise CompanionError(f"lane does not support companion sessions: {lane_id}")
+    pack = _load_companion_pack(lane_id, lanes_root=lanes_root)
     if max_turns < 1:
         raise CompanionError("max_turns must be positive")
-    job = LANES[lane_id].job
     session_id = f"session:{uuid.uuid4().hex[:12]}"
     run_id = f"companion:{lane_id}:{uuid.uuid4().hex[:12]}"
-    ledger.start_run(run_id, lane_id, job.value, Orchestrator.JOBLANE.value)
+    ledger.start_run(run_id, lane_id, pack.job.value, Orchestrator.JOBLANE.value)
     ledger.create_companion_session(
         session_id=session_id,
         run_id=run_id,
@@ -59,7 +52,7 @@ def start_companion_session(
         "session_id": session_id,
         "run_id": run_id,
         "lane_id": lane_id,
-        "job": job.value,
+        "job": pack.job.value,
         "status": "active",
         "max_turns": max_turns,
     }
@@ -71,6 +64,7 @@ def companion_turn(
     session_id: str,
     message: str,
     speaker: str = "human",
+    lanes_root: Path | str = "lanes",
 ) -> CompanionTurnResult:
     session = ledger.get_companion_session(session_id)
     if session is None:
@@ -86,7 +80,10 @@ def companion_turn(
 
     lane_id = str(session["lane_id"])
     run_id = str(session["run_id"])
-    namespace, candidate_kind = COMPANION_LANES[lane_id]
+    pack = _load_companion_pack(lane_id, lanes_root=lanes_root)
+    companion = _companion_config(pack)
+    namespace = str(companion["namespace"])
+    candidate_kind = str(companion["candidate_kind"])
     memory = MemoryStore(ledger, lane_id)
     memory.write_fast(
         namespace=namespace,
@@ -95,7 +92,7 @@ def companion_turn(
         sensitivity=Sensitivity.PRIVATE,
     )
     recall = memory.recall(namespace=namespace, limit=5)
-    reply = _reply_for(lane_id=lane_id, message=clean_message, recall=recall)
+    reply = _reply_for(pack=pack, message=clean_message, recall=recall)
     proposed_candidate_id = None
     gate_id = None
     if _should_propose_memory(clean_message):
@@ -109,7 +106,7 @@ def companion_turn(
                 "text": _durable_text(clean_message),
                 "lane_id": lane_id,
             },
-            sensitivity=Sensitivity.PRIVATE if lane_id in {"fitness", "chief_of_staff"} else Sensitivity.INTERNAL,
+            sensitivity=_companion_sensitivity(companion),
         )
         proposed_candidate_id = candidate.candidate_id
         gate_id = f"companion_memory_gate_{turn_index}"
@@ -192,16 +189,39 @@ def _durable_text(message: str) -> str:
     return message
 
 
-def _reply_for(*, lane_id: str, message: str, recall: dict[str, Any]) -> str:
+def _load_companion_pack(lane_id: str, *, lanes_root: Path | str) -> LanePack:
+    try:
+        pack = load_lane_pack(Path(lanes_root) / lane_id)
+    except LanePackError as exc:
+        raise CompanionError(f"unknown lane: {lane_id}") from exc
+    if pack.mode != "companion":
+        raise CompanionError(f"lane does not support companion sessions: {lane_id}")
+    _companion_config(pack)
+    return pack
+
+
+def _companion_config(pack: LanePack) -> dict[str, Any]:
+    companion = pack.workflow.execution.get("companion")
+    if not isinstance(companion, dict):
+        raise CompanionError(f"companion lane lacks execution.companion config: {pack.lane_id}")
+    if not companion.get("namespace") or not companion.get("candidate_kind"):
+        raise CompanionError(f"companion config incomplete: {pack.lane_id}")
+    return companion
+
+
+def _companion_sensitivity(companion: dict[str, Any]) -> Sensitivity:
+    try:
+        return Sensitivity(str(companion.get("candidate_sensitivity") or Sensitivity.PRIVATE.value))
+    except ValueError:
+        return Sensitivity.UNKNOWN
+
+
+def _reply_for(*, pack: LanePack, message: str, recall: dict[str, Any]) -> str:
     slow_count = len(recall["slow"])
     fast_count = len(recall["fast"])
-    if lane_id == "fitness":
-        if "pain" in message.lower() and "no pain" not in message.lower():
-            return "Captured. Treating pain as a stop signal until a human confirms the next training step."
-        return f"Captured the training note with {fast_count} recent fast record(s) and {slow_count} durable record(s) in view."
-    if lane_id == "chief_of_staff":
-        return f"Captured the operating context; the lane now has {fast_count} recent intention record(s) available for planning."
-    if lane_id == "reflection":
-        return f"Captured the reflection turn; durable lessons still require a gate before entering slow memory."
-    raise CompanionError(f"unsupported companion lane: {lane_id}")
-
+    if "pain" in message.lower() and "no pain" not in message.lower():
+        return "Captured. Treating pain as a stop signal until a human confirms the next step."
+    return (
+        f"Captured for {pack.title}; {fast_count} recent fast record(s) and "
+        f"{slow_count} durable record(s) are in view."
+    )

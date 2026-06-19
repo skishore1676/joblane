@@ -13,6 +13,31 @@
     "Open pull request needs a yes/no review.",
     "A low-priority research idea can wait.",
     "Schedule gym if energy is still medium after lunch."
-  ]
+  ],
+  "artifact": {
+    "shape": "morning plan",
+    "date": "fixture-today",
+    "priority": "Finish one durable proof slice before opening new architecture work.",
+    "time_blocks": [
+      {"time": "09:00", "title": "planning block", "decision": "protect"},
+      {"time": "11:30", "title": "team check-in", "decision": "attend"},
+      {"time": "15:00", "title": "deep work", "decision": "protect"}
+    ],
+    "delegate": [
+      "Ask a reviewer for a yes/no review on the open pull request."
+    ],
+    "push": [
+      "Low-priority research idea waits until the proof slice is complete."
+    ],
+    "decline": [
+      "Do not start new experiments until the proof slice is complete."
+    ],
+    "commitments": [
+      "Ship one verified proof slice.",
+      "Keep health maintenance lightweight but real.",
+      "Do not start new trading experiments until the review lane is stable."
+    ],
+    "rationale": "The day plan turns intentions, calendar, and inbox pressure into explicit commitments that require approval before becoming durable.",
+    "recall": {"lane_id": "chief_of_staff", "namespace": "intentions", "fast": [], "slow": []}
+  }
 }
-

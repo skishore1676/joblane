@@ -9,6 +9,7 @@ from .control import ControlTower
 from .doctor import Doctor
 from .drawers import DrawerManager
 from .frontdoor import ingest_frontdoor_packet
+from .lane_packs import load_lane_packs
 from .proof import build_proof_packet
 from .provider_policy import resolved_provider_report
 from .runtime import JobLaneRuntime
@@ -28,21 +29,25 @@ def main() -> int:
     run = sub.add_parser("run")
     run.add_argument("lane_id")
     run.add_argument("--root", dest="root_override")
+    run.add_argument("--lanes-root", default="lanes")
     run.add_argument("--input", help="JSON input file for the lane")
 
     run_all = sub.add_parser("run-all")
     run_all.add_argument("--root", dest="root_override")
+    run_all.add_argument("--lanes-root", default="lanes")
     run_all.add_argument("--fixtures-dir", default="lanes", help="load lanes/<id>/fixtures/sample.json when present")
 
     companion_start = sub.add_parser("companion-start")
     companion_start.add_argument("lane_id")
     companion_start.add_argument("--root", dest="root_override")
+    companion_start.add_argument("--lanes-root", default="lanes")
     companion_start.add_argument("--opened-by", default="human")
     companion_start.add_argument("--max-turns", type=int, default=8)
 
     companion_turn = sub.add_parser("companion-turn")
     companion_turn.add_argument("session_id")
     companion_turn.add_argument("--root", dest="root_override")
+    companion_turn.add_argument("--lanes-root", default="lanes")
     companion_turn.add_argument("--message", required=True)
     companion_turn.add_argument("--speaker", default="human")
 
@@ -112,10 +117,12 @@ def main() -> int:
 
     ingest = sub.add_parser("ingest-frontdoor")
     ingest.add_argument("--root", dest="root_override")
+    ingest.add_argument("--lanes-root", default="lanes")
     ingest.add_argument("--file", help="JSON packet file; stdin when omitted")
 
     ingest_surface = sub.add_parser("ingest-surface")
     ingest_surface.add_argument("--root", dest="root_override")
+    ingest_surface.add_argument("--lanes-root", default="lanes")
     ingest_surface.add_argument("--file", help="JSON packet file; stdin when omitted")
 
     export = sub.add_parser("export-openclaw-skills")
@@ -134,7 +141,8 @@ def main() -> int:
 
     args = parser.parse_args()
     root = getattr(args, "root_override", None) or args.root
-    rt = JobLaneRuntime(root)
+    lanes_root = getattr(args, "lanes_root", "lanes")
+    rt = JobLaneRuntime(root, lanes_root=lanes_root)
     try:
         if args.cmd == "proof":
             # Build proof in an isolated runtime owned by the proof helper.
@@ -151,11 +159,9 @@ def main() -> int:
             run_id = rt.run_lane(args.lane_id, inputs=inputs)
             print(run_id)
         elif args.cmd == "run-all":
-            from .lanes import LANES
-
             run_ids = {
                 lane_id: rt.run_lane(lane_id, inputs=_fixture_inputs(args.fixtures_dir, lane_id))
-                for lane_id in LANES
+                for lane_id in load_lane_packs(args.lanes_root)
             }
             print(json.dumps(run_ids, indent=2, sort_keys=True))
         elif args.cmd == "companion-start":
@@ -274,7 +280,7 @@ def main() -> int:
             print(json.dumps(result.__dict__, indent=2, sort_keys=True))
         elif args.cmd == "ingest-frontdoor":
             raw = Path(args.file).read_text(encoding="utf-8") if args.file else sys.stdin.read()
-            result = ingest_frontdoor_packet(rt.ledger, json.loads(raw))
+            result = ingest_frontdoor_packet(rt.ledger, json.loads(raw), lanes_root=args.lanes_root)
             print(json.dumps(result.__dict__, indent=2, sort_keys=True))
         elif args.cmd == "ingest-surface":
             raw = Path(args.file).read_text(encoding="utf-8") if args.file else sys.stdin.read()

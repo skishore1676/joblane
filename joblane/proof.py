@@ -5,6 +5,7 @@ import platform
 from pathlib import Path
 
 from .doctor import Doctor
+from .lane_packs import load_lane_packs
 from .runtime import JobLaneRuntime
 from .scorecard import Scorecard
 
@@ -22,16 +23,9 @@ def build_proof_packet(
         # This function intentionally owns its proof root; callers should pass a
         # scratch root. Avoid destructive cleanup and let SQLite reuse the file.
         pass
-    rt = JobLaneRuntime(root)
+    rt = JobLaneRuntime(root, lanes_root=lanes_root)
     try:
-        for lane_id in (
-            "public_presence",
-            "fitness",
-            "trading_intel",
-            "chief_of_staff",
-            "reflection",
-            "experiment",
-        ):
+        for lane_id in load_lane_packs(lanes_root):
             existing = rt.ledger.conn.execute(
                 "SELECT 1 FROM runs WHERE lane_id = ? LIMIT 1", (lane_id,)
             ).fetchone()
@@ -51,7 +45,7 @@ def build_proof_packet(
                 "public_publish": False,
                 "trading_mutation": False,
                 "auth_secret_mutation": False,
-                "oldmac_cutover": False,
+                "runtime_cutover": False,
             },
         }
     finally:

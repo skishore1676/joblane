@@ -19,6 +19,7 @@ class WorkflowSpec:
     stages: tuple[str, ...]
     gates: tuple[str, ...]
     live_effects: bool
+    execution: dict
     path: Path
 
 
@@ -66,6 +67,6 @@ def load_workflow(path: Path) -> WorkflowSpec:
         stages=tuple(stage_ids),
         gates=tuple(gate_ids),
         live_effects=bool(raw["live_effects"]),
+        execution=dict(raw.get("execution") or {}),
         path=path,
     )
-

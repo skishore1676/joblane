@@ -1,6 +1,13 @@
 {
   "experiment": "daily small creative output",
   "status": "ready",
-  "failure_reason": null
+  "failure_reason": null,
+  "artifact": {
+    "experiment": "daily small creative output",
+    "status": "ready",
+    "failure_alert": false,
+    "failure_reason": null,
+    "allowed_decisions": ["approve", "skip"],
+    "platform_weight": "minimal"
+  }
 }
-

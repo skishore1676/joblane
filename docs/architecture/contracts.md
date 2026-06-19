@@ -13,6 +13,22 @@ A lane pack owns a `workflow.json` file. The default schema is
 live-effect declaration. A gated workflow must declare content-bound gates with
 allowed decisions. Default lane packs may not enable live effects.
 
+JobLane-orchestrated packs also declare an `execution` block. The block is a
+small, declarative sandbox recipe for the current local runner:
+
+- `memory_fast`: optional fast-memory writes.
+- `memory_candidate`: optional gated slow-memory proposal.
+- `artifact`: artifact id/kind/content source and sensitivity.
+- `gate`: optional content-bound human gate.
+- `receipts`: optional non-gated proof receipts.
+- `companion`: optional namespace/kind metadata for companion-mode packs.
+- `status`: terminal run status after the sandbox step, usually `waiting` or `done`.
+
+The execution block is intentionally narrow. It is not a general programming
+language; provider calls and richer domain logic can be added as worker steps
+later, but the host must still load behavior from the lane pack or a declared
+worker, not from hardwired lane branches.
+
 ## Schedule
 
 A lane pack owns its portable schedule declaration in `lane.json`. Supported

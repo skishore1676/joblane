@@ -108,7 +108,11 @@ def _route(
         if lane_id and "lane_id" not in frontdoor_packet:
             frontdoor_packet["lane_id"] = lane_id
         frontdoor_packet.setdefault("requested_by", f"surface:{surface}")
-        result = ingest_frontdoor_packet(runtime.ledger, frontdoor_packet)
+        result = ingest_frontdoor_packet(
+            runtime.ledger,
+            frontdoor_packet,
+            lanes_root=runtime.lanes_root,
+        )
         return {**result.__dict__, "live_effect": False}
     if intent == "lane_run":
         if not lane_id:
@@ -123,4 +127,3 @@ def _required_text(packet: dict[str, Any], key: str) -> str:
     if not value:
         raise SurfaceInboxError(f"{key} is required")
     return value
-

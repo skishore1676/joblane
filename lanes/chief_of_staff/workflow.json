@@ -16,6 +16,25 @@
       "content_bound": true
     }
   ],
-  "live_effects": false
+  "live_effects": false,
+  "execution": {
+    "artifact": {
+      "id": "{run_id}:morning_plan",
+      "kind": "morning_plan",
+      "content_from": "artifact",
+      "sensitivity": "private"
+    },
+    "gate": {
+      "id": "commitment_gate",
+      "prompt": "Approve or revise the commitments this plan creates for today.",
+      "allowed_decisions": ["approve", "revise", "park"],
+      "action": "commit_day_plan"
+    },
+    "companion": {
+      "namespace": "intentions",
+      "candidate_kind": "operating_preference",
+      "candidate_sensitivity": "private"
+    },
+    "status": "waiting"
+  }
 }
-

@@ -35,6 +35,20 @@ worker unless a specific workflow elects it as orchestrator of record.
 | Runtime lane files | Drawers under deployment state |
 | Safe steering | Control |
 
+## Lane Packs
+
+A lane pack is the portable unit of fulfillment. It owns:
+
+- `lane.json`: identity, Job, mode, risk class, schedule, control actions, and drawer contract.
+- `workflow.json`: stages, content-bound gates, live-effect declaration, and the sandbox execution recipe.
+- `providers.json`: portable actor defaults.
+- `fixtures/`: hermetic inputs for proof, tests, and local development.
+
+The host discovers lane packs from `--lanes-root`. There is no engine-side lane
+registry and no per-lane Python handler in the runtime. To adopt a different
+set of Jobs, point JobLane at a different lane-pack root and keep deployment
+state, secrets, surfaces, and provider overrides outside the pack.
+
 ## One-Orchestrator Rule
 
 The system avoids double kernels by making orchestration ownership explicit per
