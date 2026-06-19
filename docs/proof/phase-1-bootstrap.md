@@ -18,8 +18,19 @@ make check
 python3 -m joblane.cli run-all --root state/dev
 python3 -m joblane.cli render --root state/dev
 python3 -m joblane.cli doctor --root state/dev
+python3 -m joblane.cli scorecard --root state/dev
 python3 -m joblane.cli export-openclaw-skills
 ```
+
+Current scorecard semantics:
+
+- 80 = useful tracer bullet, not finished product
+- 60 = partial
+- 40 = skeleton
+- below 40 = concept
+
+The first target is to move every Job to at least useful-tracer. The later target
+is to make those useful tracers real enough for daily use.
 
 Protected-gate statement:
 

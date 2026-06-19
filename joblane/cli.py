@@ -8,6 +8,7 @@ from pathlib import Path
 from .doctor import Doctor
 from .frontdoor import ingest_frontdoor_packet
 from .runtime import JobLaneRuntime
+from .scorecard import Scorecard
 from .skill_export import export_openclaw_skills
 from .surfaces import MarkdownSurface
 
@@ -33,6 +34,10 @@ def main() -> int:
     doctor = sub.add_parser("doctor")
     doctor.add_argument("--root", dest="root_override")
     doctor.add_argument("--lanes-root", default="lanes")
+
+    scorecard = sub.add_parser("scorecard")
+    scorecard.add_argument("--root", dest="root_override")
+    scorecard.add_argument("--lanes-root", default="lanes")
 
     ingest = sub.add_parser("ingest-frontdoor")
     ingest.add_argument("--root", dest="root_override")
@@ -69,6 +74,14 @@ def main() -> int:
                 )
             )
             return 0 if report.ok else 1
+        elif args.cmd == "scorecard":
+            print(
+                json.dumps(
+                    Scorecard(rt.ledger, lanes_root=args.lanes_root).to_dict(),
+                    indent=2,
+                    sort_keys=True,
+                )
+            )
         elif args.cmd == "ingest-frontdoor":
             raw = Path(args.file).read_text(encoding="utf-8") if args.file else sys.stdin.read()
             result = ingest_frontdoor_packet(rt.ledger, json.loads(raw))

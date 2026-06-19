@@ -41,6 +41,7 @@ make check
 python3 -m joblane.cli run public_presence
 python3 -m joblane.cli run-all
 python3 -m joblane.cli doctor
+python3 -m joblane.cli scorecard
 python3 -m joblane.cli export-openclaw-skills
 python3 -m joblane.cli status
 ```
