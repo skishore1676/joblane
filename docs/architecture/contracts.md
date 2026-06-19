@@ -20,6 +20,13 @@ kinds are `manual`, `daily`, `weekly`, and `interval_hours`. The schedule
 contract answers due/not-due with reasons from lane metadata plus the ledger's
 last run time. It does not mutate cron, launchd, or any external scheduler.
 
+## Drawer
+
+A lane pack declares its drawer contract in `lane.json`; deployment state owns
+the actual folders. The standard drawers are `inbox`, `work`, `products`, and
+`archive` under `state/lanes/<lane_id>/`. Runtime drawer contents must not live
+inside source lane folders.
+
 ## Runner
 
 The deployment runner is a one-shot local executor. A tick may run due lanes,

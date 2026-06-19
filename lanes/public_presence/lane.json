@@ -8,5 +8,6 @@
   "live_effects": false,
   "schedule": {"kind": "weekly", "days": ["mon"], "time": "09:00"},
   "allowed_control_actions": ["run_now", "park", "cancel"],
+  "drawers": ["inbox", "work", "products", "archive"],
   "description": "Draft public writing packets with human taste gates and no live publish by default."
 }

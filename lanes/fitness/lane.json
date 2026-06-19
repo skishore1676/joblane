@@ -8,5 +8,6 @@
   "live_effects": false,
   "schedule": {"kind": "manual"},
   "allowed_control_actions": ["run_now", "park"],
+  "drawers": ["inbox", "work", "products", "archive"],
   "description": "In-gym coaching and one-message workout logging into gated body memory."
 }

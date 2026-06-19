@@ -8,5 +8,6 @@
   "live_effects": false,
   "schedule": {"kind": "daily", "time": "18:00"},
   "allowed_control_actions": ["run_now", "park", "cancel"],
+  "drawers": ["inbox", "work", "products", "archive"],
   "description": "Minimal approve/skip experiment lane with failure alert fixture."
 }

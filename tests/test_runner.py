@@ -30,6 +30,7 @@ class DeploymentRunnerTest(unittest.TestCase):
                 status = rt.status()
                 self.assertEqual(status["counts"]["runs"], 3)
                 self.assertGreaterEqual(status["counts"]["surface_refs"], 1)
+                self.assertTrue((Path(tmp) / "lanes" / "chief_of_staff" / "inbox").is_dir())
                 receipt = rt.ledger.conn.execute(
                     "SELECT * FROM receipts WHERE receipt_id = ?",
                     (result.receipt_id,),
@@ -93,4 +94,3 @@ class DeploymentRunnerTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

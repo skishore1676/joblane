@@ -7,6 +7,7 @@ from pathlib import Path
 
 from .control import ControlTower
 from .doctor import Doctor
+from .drawers import DrawerManager
 from .frontdoor import ingest_frontdoor_packet
 from .proof import build_proof_packet
 from .provider_policy import resolved_provider_report
@@ -95,6 +96,11 @@ def main() -> int:
     control_intent.add_argument("--lanes-root", default="lanes")
     control_intent.add_argument("--run-id")
     control_intent.add_argument("--note", default="")
+
+    drawers = sub.add_parser("drawers")
+    drawers.add_argument("--root", dest="root_override")
+    drawers.add_argument("--lanes-root", default="lanes")
+    drawers.add_argument("--ensure", action="store_true")
 
     tick = sub.add_parser("tick")
     tick.add_argument("--root", dest="root_override")
@@ -255,6 +261,10 @@ def main() -> int:
                     sort_keys=True,
                 )
             )
+        elif args.cmd == "drawers":
+            manager = DrawerManager(Path(root), lanes_root=args.lanes_root)
+            refs = manager.ensure() if args.ensure else manager.refs()
+            print(json.dumps([ref.to_dict() for ref in refs], indent=2, sort_keys=True))
         elif args.cmd == "tick":
             result = DeploymentRunner(
                 rt,

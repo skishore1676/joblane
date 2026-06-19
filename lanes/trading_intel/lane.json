@@ -8,5 +8,6 @@
   "live_effects": false,
   "schedule": {"kind": "daily", "time": "16:00"},
   "allowed_control_actions": ["run_now", "park"],
+  "drawers": ["inbox", "work", "products", "archive"],
   "description": "Read-only trading health and anomaly synthesis with no order authority."
 }

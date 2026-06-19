@@ -13,6 +13,7 @@ JobLane has six stable nouns:
 - **Schedule**: portable lane-owned recurrence declaration.
 - **Runner**: one-shot due-lane executor that writes local proof.
 - **Provider Policy**: deployment-owned worker binding and failover.
+- **Drawer**: deployment-owned lane state folder, never source content.
 
 Providers are workers. Control is a steering layer. OpenClaw is a front door or
 worker unless a specific workflow elects it as orchestrator of record.
@@ -31,6 +32,7 @@ worker unless a specific workflow elects it as orchestrator of record.
 | Recurrence declaration | Lane pack schedule |
 | Scheduled execution | Deployment runner |
 | Worker binding | Provider policy |
+| Runtime lane files | Drawers under deployment state |
 | Safe steering | Control |
 
 ## One-Orchestrator Rule
@@ -108,3 +110,10 @@ Control Tower is the generic cockpit read/write layer. It reads ledger status,
 shows waiting gates and allowed actions, and writes `control_intents` after
 checking each lane's `allowed_control_actions`. It does not directly cancel,
 resume, approve, publish, send, or run live effects.
+
+## Drawers
+
+Lane packs declare drawer names, but the folders live under deployment state:
+`state/lanes/<lane_id>/{inbox,work,products,archive}`. Source folders under
+`lanes/<lane_id>/` stay portable and contain only lane definition, prompts,
+fixtures, and tests.

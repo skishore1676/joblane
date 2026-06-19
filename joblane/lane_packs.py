@@ -10,6 +10,9 @@ from .schedules import ScheduleSpec, parse_schedule
 from .workflows import WorkflowSpec, load_workflow
 
 
+DEFAULT_DRAWERS = ("inbox", "work", "products", "archive")
+
+
 @dataclass(frozen=True)
 class LanePack:
     lane_id: str
@@ -22,6 +25,7 @@ class LanePack:
     description: str
     schedule: ScheduleSpec
     allowed_control_actions: tuple[str, ...]
+    drawers: tuple[str, ...]
     providers: LaneProviderSpec
     workflow: WorkflowSpec
     path: Path
@@ -47,6 +51,7 @@ def load_lane_pack(path: Path) -> LanePack:
         "description",
         "schedule",
         "allowed_control_actions",
+        "drawers",
     }
     missing = sorted(required - raw.keys())
     if missing:
@@ -78,6 +83,11 @@ def load_lane_pack(path: Path) -> LanePack:
     raw_actions = raw["allowed_control_actions"]
     if not isinstance(raw_actions, list) or not all(isinstance(action, str) for action in raw_actions):
         raise LanePackError(f"{meta_path} allowed_control_actions must be a list of strings")
+    raw_drawers = raw["drawers"]
+    if not isinstance(raw_drawers, list) or not all(isinstance(drawer, str) for drawer in raw_drawers):
+        raise LanePackError(f"{meta_path} drawers must be a list of strings")
+    if set(raw_drawers) - set(DEFAULT_DRAWERS):
+        raise LanePackError(f"{meta_path} declares unsupported drawers")
     try:
         schedule = parse_schedule(raw["schedule"])
     except ValueError as exc:
@@ -97,6 +107,7 @@ def load_lane_pack(path: Path) -> LanePack:
         description=str(raw["description"]),
         schedule=schedule,
         allowed_control_actions=tuple(raw_actions),
+        drawers=tuple(raw_drawers),
         providers=providers,
         workflow=workflow,
         path=path,

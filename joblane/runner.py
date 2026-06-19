@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any
 
 from .contracts import Receipt
+from .drawers import DrawerManager
 from .runtime import JobLaneRuntime
 from .scheduler import Scheduler
 from .surfaces import MarkdownSurface
@@ -51,6 +52,7 @@ class DeploymentRunner:
         board_path: str | None = None
         receipt_id: str | None = None
         if not dry_run:
+            DrawerManager(self.runtime.root, lanes_root=self.lanes_root).ensure()
             for lane_id in due_lane_ids:
                 run_ids[lane_id] = self.runtime.run_lane(
                     lane_id,
@@ -97,4 +99,3 @@ def _fixture_inputs(fixtures_dir: Path, lane_id: str) -> dict[str, Any]:
     if not isinstance(value, dict):
         raise ValueError(f"fixture must be a JSON object: {path}")
     return value
-

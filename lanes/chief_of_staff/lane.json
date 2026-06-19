@@ -8,5 +8,6 @@
   "live_effects": false,
   "schedule": {"kind": "daily", "time": "08:30"},
   "allowed_control_actions": ["run_now", "park", "cancel"],
+  "drawers": ["inbox", "work", "products", "archive"],
   "description": "Morning shape-mode with delegate, push, and decline calls grounded in intentions."
 }
