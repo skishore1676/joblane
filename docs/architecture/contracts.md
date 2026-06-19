@@ -15,6 +15,16 @@ A valid gate decision must:
 - match the expected action fingerprint
 - bind to the approved artifact hash when content matters
 
+Approved gates may trigger durable effects only through the runtime effect
+bridge. Current sandbox effects are:
+
+- draft packet staging to a local outbox
+- durable memory promotion from a pending candidate
+- local commitment receipt
+- local experiment staging receipt
+
+Reject, revise, park, or skip decisions do not perform the approved effect.
+
 ## Memory
 
 Fast memory is append-only and gate-free. Slow memory is durable and promoted
@@ -36,4 +46,3 @@ may cascade; a valid semantic verdict must not be rerolled.
 
 Control reads ledger state and writes validated intents. It never mutates
 workflow state directly and never bypasses gates.
-

@@ -10,6 +10,7 @@ What exists:
 - lane-pack metadata under `lanes/*/lane.json`
 - sandbox-only local deployment example
 - doctor/readback command
+- approved-gate effect bridge for local draft staging and gated memory promotion
 
 Current proof commands:
 
@@ -24,13 +25,14 @@ python3 -m joblane.cli export-openclaw-skills
 
 Current scorecard semantics:
 
-- 80 = useful tracer bullet, not finished product
+- 80+ = useful tracer bullet, not finished product
 - 60 = partial
 - 40 = skeleton
 - below 40 = concept
 
-The first target is to move every Job to at least useful-tracer. The later target
-is to make those useful tracers real enough for daily use.
+The score includes artifact acceptance checks, not only substrate existence. The
+first target is to move every Job to at least useful-tracer. The later target is
+to make those useful tracers real enough for daily use.
 
 Protected-gate statement:
 

@@ -29,7 +29,12 @@ def public_presence(ledger: Ledger, run_id: str, inputs: dict[str, Any]) -> Lane
             "A good agent system separates demand, fulfillment, and proof.",
             "A workflow has one orchestrator of record.",
         ],
+        "review_questions": [
+            "Is the claim sharp enough to publish?",
+            "Does anything private or operational leak?",
+        ],
         "publish_mode": "draft_only",
+        "live_publish_allowed": False,
     }
     artifact = make_artifact("public_presence:packet", "publish_packet", packet)
     gate = make_gate(
@@ -56,8 +61,13 @@ def fitness(ledger: Ledger, run_id: str, inputs: dict[str, Any]) -> LaneResult:
     session = {
         "today": "full-body strength, conservative re-entry",
         "main_lifts": ["squat 3x5 RIR2", "press 3x5 RIR2", "row 3x8"],
+        "progression_checks": [
+            "hold load if pain appears",
+            "add one rep next time if all sets feel RIR2+",
+        ],
         "recall": recall,
         "parsed_log_candidate": inputs.get("log", "squat 3x5 @ easy; no pain"),
+        "durable_write_requires_gate": True,
     }
     candidate = memory.propose(
         namespace="gym",
@@ -84,7 +94,9 @@ def trading_intel(ledger: Ledger, run_id: str, inputs: dict[str, Any]) -> LaneRe
         "mode": "read_only",
         "health": "yellow",
         "anomalies": ["one data cache is stale in fixture"],
+        "evidence_refs": ["fixture://broker-cache", "fixture://strategy-ledger"],
         "forbidden": ["submit_order", "cancel_order", "transfer_cash"],
+        "trade_authority": False,
         "next_question": "Did the stale cache affect today's synthesis?",
     }
     artifact = make_artifact(
@@ -114,6 +126,10 @@ def chief_of_staff(ledger: Ledger, run_id: str, inputs: dict[str, Any]) -> LaneR
         "delegate": ["send routine follow-up to assistant"],
         "push": ["finish one JobLane proof slice before opening new research"],
         "decline": ["skip new trading experiments today"],
+        "commitments": [
+            "finish the current proof slice before starting new architecture work",
+            "review waiting gates before adding more lanes",
+        ],
         "recall": recall,
     }
     artifact = make_artifact("chief_of_staff:plan", "morning_plan", plan, sensitivity=Sensitivity.PRIVATE)
@@ -147,7 +163,12 @@ def reflection(ledger: Ledger, run_id: str, inputs: dict[str, Any]) -> LaneResul
     artifact = make_artifact(
         "reflection:takeaway",
         "memory_takeaway",
-        {"candidate_id": candidate.candidate_id, "recall": memory.recall(namespace="weekly")},
+        {
+            "candidate_id": candidate.candidate_id,
+            "prompt": "What decision should persist beyond this session?",
+            "recall": memory.recall(namespace="weekly"),
+            "durable_write_requires_gate": True,
+        },
     )
     gate = make_gate(
         gate_id="memory_gate",
@@ -167,6 +188,8 @@ def experiment(ledger: Ledger, run_id: str, inputs: dict[str, Any]) -> LaneResul
         "experiment": "daily small creative output",
         "status": inputs.get("status", "ready"),
         "failure_alert": inputs.get("status") == "failed",
+        "allowed_decisions": ["approve", "skip"],
+        "platform_weight": "minimal",
     }
     artifact = make_artifact("experiment:packet", "experiment_packet", packet)
     gate = make_gate(
@@ -190,4 +213,3 @@ LANES: dict[str, LaneSpec] = {
     "reflection": LaneSpec("reflection", JobArea.REFLECTION, reflection),
     "experiment": LaneSpec("experiment", JobArea.EXPERIMENT, experiment),
 }
-

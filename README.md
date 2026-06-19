@@ -39,6 +39,7 @@ to prove that every Job can move through the same durable substrate.
 ```bash
 make check
 python3 -m joblane.cli run public_presence
+python3 -m joblane.cli decide <run_id> <gate_id> approve
 python3 -m joblane.cli run-all
 python3 -m joblane.cli doctor
 python3 -m joblane.cli scorecard

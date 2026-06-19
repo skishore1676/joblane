@@ -25,12 +25,12 @@ class ScorecardTest(unittest.TestCase):
                     rt.run_lane(lane_id)
                 card = Scorecard(rt.ledger, lanes_root=repo / "lanes").to_dict()
                 self.assertEqual(set(card), {"A", "B", "C", "D", "E", "F"})
-                self.assertTrue(all(row["score"] >= 80 for row in card.values()))
+                self.assertTrue(all(row["score"] >= 100 for row in card.values()))
                 self.assertEqual(card["C"]["status"], "useful-tracer")
+                self.assertIn("read-only", " ".join(card["C"]["evidence"]))
             finally:
                 rt.close()
 
 
 if __name__ == "__main__":
     unittest.main()
-

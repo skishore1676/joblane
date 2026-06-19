@@ -28,6 +28,13 @@ def main() -> int:
     status = sub.add_parser("status")
     status.add_argument("--root", dest="root_override")
 
+    decide = sub.add_parser("decide")
+    decide.add_argument("run_id")
+    decide.add_argument("gate_id")
+    decide.add_argument("decision")
+    decide.add_argument("--note", default="")
+    decide.add_argument("--root", dest="root_override")
+
     render = sub.add_parser("render")
     render.add_argument("--root", dest="root_override")
 
@@ -61,6 +68,14 @@ def main() -> int:
             print(json.dumps(run_ids, indent=2, sort_keys=True))
         elif args.cmd == "status":
             print(json.dumps(rt.status(), indent=2, sort_keys=True))
+        elif args.cmd == "decide":
+            rt.decide_gate(
+                run_id=args.run_id,
+                gate_id=args.gate_id,
+                decision=args.decision,
+                note=args.note,
+            )
+            print(json.dumps({"ok": True, "run_id": args.run_id, "gate_id": args.gate_id}, indent=2))
         elif args.cmd == "render":
             paths = MarkdownSurface(Path(root) / "surfaces" / "markdown", rt.ledger).render_waiting_gates()
             print(json.dumps([str(path) for path in paths], indent=2))

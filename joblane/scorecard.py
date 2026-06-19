@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 
+from .acceptance import evaluate_job_artifacts
 from .contracts import JobArea
 from .lane_packs import load_lane_packs
 from .ledger import Ledger
@@ -62,6 +63,13 @@ class Scorecard:
                 evidence.append("job-specific substrate signal present")
             else:
                 gaps.append("missing job-specific substrate signal")
+            job_artifacts = [artifact for artifact in artifacts if artifact["run_id"] in job_run_ids]
+            acceptance = evaluate_job_artifacts(job, job_artifacts)
+            if acceptance.ok:
+                score += 20
+                evidence.extend(acceptance.evidence)
+            else:
+                gaps.extend(acceptance.gaps)
             if score >= 80:
                 status = "useful-tracer"
             elif score >= 60:
@@ -72,6 +80,8 @@ class Scorecard:
                 status = "concept"
             if score < 80:
                 gaps.append("needs richer real-world workflow before 70-80% target")
+            elif score < 100:
+                gaps.append("useful tracer only; still needs live-context integrations before production")
             out[job] = JobScore(job=job, score=score, status=status, evidence=tuple(evidence), gaps=tuple(gaps))
         return out
 
@@ -106,4 +116,3 @@ class Scorecard:
             }
             for job, score in self.build().items()
         }
-
