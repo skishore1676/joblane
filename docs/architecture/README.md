@@ -49,6 +49,10 @@ registry and no per-lane Python handler in the runtime. To adopt a different
 set of Jobs, point JobLane at a different lane-pack root and keep deployment
 state, secrets, surfaces, and provider overrides outside the pack.
 
+This repo ships only a public starter pack at
+`examples/lane-packs/starter/lanes`. Private job packs are imports, not core
+source. They should live in a separate private repo or an ignored local path.
+
 ## One-Orchestrator Rule
 
 The system avoids double kernels by making orchestration ownership explicit per
@@ -128,6 +132,5 @@ resume, approve, publish, send, or run live effects.
 ## Drawers
 
 Lane packs declare drawer names, but the folders live under deployment state:
-`state/lanes/<lane_id>/{inbox,work,products,archive}`. Source folders under
-`lanes/<lane_id>/` stay portable and contain only lane definition, prompts,
-fixtures, and tests.
+`state/lanes/<lane_id>/{inbox,work,products,archive}`. Source lane-pack folders
+stay portable and contain only lane definition, prompts, fixtures, and tests.

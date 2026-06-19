@@ -4,6 +4,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from tests.paths import STARTER_LANES_ROOT
 from joblane.doctor import Doctor
 from joblane.runtime import JobLaneRuntime
 
@@ -24,7 +25,7 @@ class DoctorTest(unittest.TestCase):
                     rt.run_lane(lane_id)
                 report = Doctor(
                     rt.ledger,
-                    lanes_root=Path(__file__).resolve().parents[1] / "lanes",
+                    lanes_root=STARTER_LANES_ROOT,
                 ).run()
                 self.assertTrue(report.ok, report.issues)
                 self.assertEqual(report.summary["covered_jobs"], ["A", "B", "C", "D", "E", "F"])

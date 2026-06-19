@@ -11,10 +11,16 @@ from .gates import validate_decision
 from .lane_packs import load_lane_pack
 from .ledger import Ledger
 from .memory import MemoryStore
+from .paths import DEFAULT_LANES_ROOT
 
 
 class JobLaneRuntime:
-    def __init__(self, root: Path | str = "state/local", *, lanes_root: Path | str = "lanes") -> None:
+    def __init__(
+        self,
+        root: Path | str = "state/local",
+        *,
+        lanes_root: Path | str = DEFAULT_LANES_ROOT,
+    ) -> None:
         self.root = Path(root)
         self.lanes_root = Path(lanes_root)
         self.root.mkdir(parents=True, exist_ok=True)

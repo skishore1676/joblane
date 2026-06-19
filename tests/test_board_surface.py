@@ -4,6 +4,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from tests.paths import STARTER_LANES_ROOT
 from joblane.runtime import JobLaneRuntime
 from joblane.surfaces import MarkdownSurface
 
@@ -18,14 +19,14 @@ class BoardSurfaceTest(unittest.TestCase):
                 rt.run_lane("public_presence")
                 rt.run_lane("trading_intel")
                 surface = MarkdownSurface(root / "vault", rt.ledger)
-                path = surface.render_board(lanes_root=repo / "lanes")
+                path = surface.render_board(lanes_root=STARTER_LANES_ROOT)
                 text = path.read_text(encoding="utf-8")
                 self.assertIn("Needs Attention", text)
                 self.assertIn("Schedule Due", text)
                 self.assertIn("taste_gate", text)
                 self.assertIn("| A |", text)
                 path.unlink()
-                rerendered = surface.render_board(lanes_root=repo / "lanes")
+                rerendered = surface.render_board(lanes_root=STARTER_LANES_ROOT)
                 self.assertIn("taste_gate", rerendered.read_text(encoding="utf-8"))
                 self.assertEqual(rt.status()["counts"]["runs"], 2)
             finally:

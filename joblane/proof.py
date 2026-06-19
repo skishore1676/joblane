@@ -6,6 +6,7 @@ from pathlib import Path
 
 from .doctor import Doctor
 from .lane_packs import load_lane_packs
+from .paths import DEFAULT_LANES_ROOT
 from .runtime import JobLaneRuntime
 from .scorecard import Scorecard
 
@@ -13,7 +14,7 @@ from .scorecard import Scorecard
 def build_proof_packet(
     *,
     root: Path | str = "state/proof",
-    lanes_root: Path | str = "lanes",
+    lanes_root: Path | str = DEFAULT_LANES_ROOT,
     output: Path | str = "out/proof/joblane-proof.json",
 ) -> Path:
     root = Path(root)

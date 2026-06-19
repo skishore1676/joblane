@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from tests.paths import STARTER_LANES_ROOT
 import json
 import subprocess
 import sys
@@ -116,7 +117,7 @@ class CliTest(unittest.TestCase):
                         "--now",
                         "2026-06-19T17:00:00",
                         "--lanes-root",
-                        str(repo / "lanes"),
+                        str(STARTER_LANES_ROOT),
                         "--root",
                         tmp,
                     ],
@@ -140,7 +141,7 @@ class CliTest(unittest.TestCase):
                         "joblane.cli",
                         "control-actions",
                         "--lanes-root",
-                        str(repo / "lanes"),
+                        str(STARTER_LANES_ROOT),
                         "--root",
                         tmp,
                     ],
@@ -160,7 +161,7 @@ class CliTest(unittest.TestCase):
                         "experiment",
                         "park",
                         "--lanes-root",
-                        str(repo / "lanes"),
+                        str(STARTER_LANES_ROOT),
                         "--root",
                         tmp,
                     ],

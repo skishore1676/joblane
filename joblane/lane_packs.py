@@ -6,6 +6,7 @@ from pathlib import Path
 
 from .contracts import JobArea, Orchestrator, RiskClass
 from .provider_policy import LaneProviderSpec, load_lane_provider_spec
+from .paths import DEFAULT_LANES_ROOT
 from .schedules import ScheduleSpec, parse_schedule
 from .workflows import WorkflowSpec, load_workflow
 
@@ -114,7 +115,7 @@ def load_lane_pack(path: Path) -> LanePack:
     )
 
 
-def load_lane_packs(root: Path | str = "lanes") -> dict[str, LanePack]:
+def load_lane_packs(root: Path | str = DEFAULT_LANES_ROOT) -> dict[str, LanePack]:
     root = Path(root)
     packs = {}
     for path in sorted(p for p in root.iterdir() if p.is_dir()):

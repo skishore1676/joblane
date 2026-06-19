@@ -7,6 +7,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from tests.paths import STARTER_LANES_ROOT
 from joblane.drawers import DrawerManager
 
 
@@ -14,7 +15,7 @@ class DrawerManagerTest(unittest.TestCase):
     def test_drawers_are_declared_outside_lane_source(self) -> None:
         repo = Path(__file__).resolve().parents[1]
         with tempfile.TemporaryDirectory() as tmp:
-            manager = DrawerManager(Path(tmp), lanes_root=repo / "lanes")
+            manager = DrawerManager(Path(tmp), lanes_root=STARTER_LANES_ROOT)
             refs = manager.refs()
             self.assertTrue(refs)
             self.assertTrue(all(not ref.exists for ref in refs))
@@ -22,7 +23,7 @@ class DrawerManagerTest(unittest.TestCase):
             ensured = manager.ensure()
             self.assertTrue(all(ref.exists for ref in ensured))
             self.assertTrue((Path(tmp) / "lanes" / "reflection" / "work").is_dir())
-            self.assertFalse((repo / "lanes" / "reflection" / "work").exists())
+            self.assertFalse((STARTER_LANES_ROOT / "reflection" / "work").exists())
 
     def test_drawers_cli(self) -> None:
         repo = Path(__file__).resolve().parents[1]
@@ -36,7 +37,7 @@ class DrawerManagerTest(unittest.TestCase):
                         "drawers",
                         "--ensure",
                         "--lanes-root",
-                        str(repo / "lanes"),
+                        str(STARTER_LANES_ROOT),
                         "--root",
                         tmp,
                     ],

@@ -7,6 +7,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from tests.paths import STARTER_LANES_ROOT
 from joblane.provider_policy import (
     load_deployment_policy,
     load_lane_provider_spec,
@@ -18,7 +19,7 @@ from joblane.provider_policy import (
 class ProviderPolicyTest(unittest.TestCase):
     def test_deployment_actor_override_beats_lane_default(self) -> None:
         repo = Path(__file__).resolve().parents[1]
-        lane_spec = load_lane_provider_spec(repo / "lanes" / "reflection" / "providers.json")
+        lane_spec = load_lane_provider_spec(STARTER_LANES_ROOT / "reflection" / "providers.json")
         deployment = load_deployment_policy(repo / "deployments" / "local.example" / "provider-policy.json")
 
         binding = resolve_provider_binding(
@@ -36,7 +37,7 @@ class ProviderPolicyTest(unittest.TestCase):
         repo = Path(__file__).resolve().parents[1]
 
         rows = resolved_provider_report(
-            lanes_root=repo / "lanes",
+            lanes_root=STARTER_LANES_ROOT,
             policy_path=repo / "deployments" / "local.example" / "provider-policy.json",
         )
 
@@ -56,7 +57,7 @@ class ProviderPolicyTest(unittest.TestCase):
                         "joblane.cli",
                         "providers",
                         "--lanes-root",
-                        str(repo / "lanes"),
+                        str(STARTER_LANES_ROOT),
                         "--policy",
                         str(repo / "deployments" / "local.example" / "provider-policy.json"),
                         "--root",

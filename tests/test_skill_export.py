@@ -4,6 +4,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from tests.paths import STARTER_LANES_ROOT
 from joblane.skill_export import export_openclaw_skills, install_openclaw_skills
 
 
@@ -12,7 +13,7 @@ class SkillExportTest(unittest.TestCase):
         repo = Path(__file__).resolve().parents[1]
         with tempfile.TemporaryDirectory() as tmp:
             paths = export_openclaw_skills(
-                lanes_root=repo / "lanes",
+                lanes_root=STARTER_LANES_ROOT,
                 out_dir=Path(tmp) / "skills",
             )
             self.assertEqual(len(paths), 6)
@@ -26,7 +27,7 @@ class SkillExportTest(unittest.TestCase):
         repo = Path(__file__).resolve().parents[1]
         with tempfile.TemporaryDirectory() as tmp:
             paths = install_openclaw_skills(
-                lanes_root=repo / "lanes",
+                lanes_root=STARTER_LANES_ROOT,
                 target_dir=Path(tmp) / "openclaw" / "skills",
             )
             self.assertEqual(len(paths), 6)

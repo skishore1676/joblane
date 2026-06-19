@@ -5,11 +5,12 @@ from pathlib import Path
 
 from .ledger import Ledger
 from .lane_packs import load_lane_packs
+from .paths import DEFAULT_LANES_ROOT
 from .schedules import due_status, parse_now
 
 
 class Scheduler:
-    def __init__(self, ledger: Ledger, *, lanes_root: Path | str = "lanes") -> None:
+    def __init__(self, ledger: Ledger, *, lanes_root: Path | str = DEFAULT_LANES_ROOT) -> None:
         self.ledger = ledger
         self.lanes_root = lanes_root
 
@@ -42,4 +43,3 @@ class Scheduler:
         if row is None:
             return None
         return datetime.fromisoformat(str(row["created_at"]))
-

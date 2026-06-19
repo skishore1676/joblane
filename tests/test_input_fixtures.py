@@ -7,6 +7,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from tests.paths import STARTER_LANES_ROOT
 from joblane.runtime import JobLaneRuntime
 
 
@@ -23,7 +24,7 @@ class InputFixturesTest(unittest.TestCase):
                     "run",
                     "fitness",
                     "--input",
-                    str(repo / "lanes" / "fitness" / "fixtures" / "sample.json"),
+                    str(STARTER_LANES_ROOT / "fitness" / "fixtures" / "sample.json"),
                     "--root",
                     str(root),
                 ],
@@ -52,7 +53,7 @@ class InputFixturesTest(unittest.TestCase):
                     "joblane.cli",
                     "run-all",
                     "--fixtures-dir",
-                    str(repo / "lanes"),
+                    str(STARTER_LANES_ROOT),
                     "--root",
                     str(root),
                 ],

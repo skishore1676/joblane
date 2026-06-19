@@ -9,3 +9,10 @@ state/
 out/
 /.super-goal/
 
+# Local/private lane packs and deployment material. Keep real jobs, prompts,
+# surface targets, and operator-specific provider overrides out of this public
+# capability repo.
+/private/
+/local-lane-packs/
+/lane-packs.local/
+/deployments/*.local/

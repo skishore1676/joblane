@@ -8,6 +8,7 @@ from typing import Any
 
 from .contracts import Receipt
 from .drawers import DrawerManager
+from .paths import DEFAULT_LANES_ROOT
 from .runtime import JobLaneRuntime
 from .scheduler import Scheduler
 from .surfaces import MarkdownSurface
@@ -37,8 +38,8 @@ class DeploymentRunner:
         self,
         runtime: JobLaneRuntime,
         *,
-        lanes_root: Path | str = "lanes",
-        fixtures_dir: Path | str = "lanes",
+        lanes_root: Path | str = DEFAULT_LANES_ROOT,
+        fixtures_dir: Path | str = DEFAULT_LANES_ROOT,
     ) -> None:
         self.runtime = runtime
         self.lanes_root = Path(lanes_root)

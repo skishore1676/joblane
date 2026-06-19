@@ -3,10 +3,11 @@ from __future__ import annotations
 from pathlib import Path
 
 from .lane_packs import LanePack, load_lane_packs
+from .paths import DEFAULT_LANES_ROOT
 
 
 def export_openclaw_skills(
-    *, lanes_root: Path | str = "lanes", out_dir: Path | str = "out/openclaw-skills"
+    *, lanes_root: Path | str = DEFAULT_LANES_ROOT, out_dir: Path | str = "out/openclaw-skills"
 ) -> list[Path]:
     """Generate thin OpenClaw skill docs for lane front-door usage.
 
@@ -28,7 +29,7 @@ def export_openclaw_skills(
 
 def install_openclaw_skills(
     *,
-    lanes_root: Path | str = "lanes",
+    lanes_root: Path | str = DEFAULT_LANES_ROOT,
     target_dir: Path | str,
     prefix: str = "joblane-",
 ) -> list[Path]:

@@ -4,6 +4,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from tests.paths import STARTER_LANES_ROOT
 from joblane.runtime import JobLaneRuntime
 from joblane.scorecard import Scorecard
 
@@ -23,7 +24,7 @@ class ScorecardTest(unittest.TestCase):
                     "experiment",
                 ):
                     rt.run_lane(lane_id)
-                card = Scorecard(rt.ledger, lanes_root=repo / "lanes").to_dict()
+                card = Scorecard(rt.ledger, lanes_root=STARTER_LANES_ROOT).to_dict()
                 self.assertEqual(set(card), {"A", "B", "C", "D", "E", "F"})
                 self.assertTrue(all(row["score"] >= 100 for row in card.values()))
                 self.assertEqual(card["C"]["status"], "useful-tracer")

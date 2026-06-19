@@ -10,6 +10,7 @@ from .gates import make_artifact, make_gate
 from .lane_packs import LanePack, LanePackError, load_lane_pack
 from .ledger import Ledger
 from .memory import MemoryStore
+from .paths import DEFAULT_LANES_ROOT
 
 
 class CompanionError(ValueError):
@@ -33,7 +34,7 @@ def start_companion_session(
     lane_id: str,
     opened_by: str = "human",
     max_turns: int = 8,
-    lanes_root: Path | str = "lanes",
+    lanes_root: Path | str = DEFAULT_LANES_ROOT,
 ) -> dict[str, Any]:
     pack = _load_companion_pack(lane_id, lanes_root=lanes_root)
     if max_turns < 1:
@@ -64,7 +65,7 @@ def companion_turn(
     session_id: str,
     message: str,
     speaker: str = "human",
-    lanes_root: Path | str = "lanes",
+    lanes_root: Path | str = DEFAULT_LANES_ROOT,
 ) -> CompanionTurnResult:
     session = ledger.get_companion_session(session_id)
     if session is None:

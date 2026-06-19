@@ -10,6 +10,7 @@ from .gates import make_artifact, make_gate
 from .lane_packs import LanePackError, load_lane_pack
 from .ledger import Ledger
 from .memory import MemoryStore
+from .paths import DEFAULT_LANES_ROOT
 
 
 class FrontDoorPacketError(ValueError):
@@ -29,7 +30,7 @@ def ingest_frontdoor_packet(
     ledger: Ledger,
     packet: dict[str, Any],
     *,
-    lanes_root: Path | str = "lanes",
+    lanes_root: Path | str = DEFAULT_LANES_ROOT,
 ) -> FrontDoorResult:
     """Ingest a packet from a conversational front door.
 

@@ -6,6 +6,7 @@ from typing import Any
 
 from .lane_packs import load_lane_packs
 from .ledger import Ledger
+from .paths import DEFAULT_LANES_ROOT
 
 
 class ControlIntentError(ValueError):
@@ -13,7 +14,7 @@ class ControlIntentError(ValueError):
 
 
 class ControlTower:
-    def __init__(self, ledger: Ledger, *, lanes_root: Path | str = "lanes") -> None:
+    def __init__(self, ledger: Ledger, *, lanes_root: Path | str = DEFAULT_LANES_ROOT) -> None:
         self.ledger = ledger
         self.lanes_root = lanes_root
 

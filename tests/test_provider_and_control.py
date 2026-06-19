@@ -4,6 +4,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from tests.paths import STARTER_LANES_ROOT
 from joblane.contracts import ProviderResult
 from joblane.control import ControlIntentError, ControlTower
 from joblane.providers import DeterministicProvider, FailoverProvider, OpenClawProvider, ProviderRequest
@@ -67,7 +68,7 @@ class ProviderAndControlTest(unittest.TestCase):
             rt = JobLaneRuntime(Path(tmp))
             try:
                 run_id = rt.run_lane("experiment")
-                tower = ControlTower(rt.ledger, lanes_root=repo / "lanes")
+                tower = ControlTower(rt.ledger, lanes_root=STARTER_LANES_ROOT)
                 actions = tower.lane_actions()
                 self.assertTrue(any(row["lane_id"] == "experiment" for row in actions))
 

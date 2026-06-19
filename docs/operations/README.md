@@ -5,14 +5,14 @@ This first slice is local-only and sandboxed.
 ```bash
 make check
 python3 -m joblane.cli run chief_of_staff --root state/local
-python3 -m joblane.cli run fitness --input lanes/fitness/fixtures/sample.json --root state/local
+python3 -m joblane.cli run fitness --input examples/lane-packs/starter/lanes/fitness/fixtures/sample.json --root state/local
 python3 -m joblane.cli companion-start reflection --root state/local
 python3 -m joblane.cli companion-turn <session_id> --message "Remember that one workflow has one orchestrator." --root state/local
 python3 -m joblane.cli ingest-surface --file surface-packet.json --root state/local
 python3 -m joblane.cli render --root state/local
 python3 -m joblane.cli board --root state/local
 python3 -m joblane.cli due --root state/local
-python3 -m joblane.cli tick --fixtures-dir lanes --root state/local
+python3 -m joblane.cli tick --root state/local
 python3 -m joblane.cli providers --policy deployments/local.example/provider-policy.json --root state/local
 python3 -m joblane.cli control-actions --root state/local
 python3 -m joblane.cli control-intent experiment park --root state/local
@@ -57,7 +57,7 @@ This command does not install or mutate a scheduler.
 Use `joblane tick` to execute due lanes once:
 
 ```bash
-python3 -m joblane.cli tick --now 2026-06-19T17:00:00 --fixtures-dir lanes --root state/local
+python3 -m joblane.cli tick --now 2026-06-19T17:00:00 --root state/local
 ```
 
 Tick renders local Markdown surfaces and writes a `runner_tick` receipt. It is
@@ -90,3 +90,18 @@ python3 -m joblane.cli drawers --ensure --root state/local
 
 This creates `state/local/lanes/<lane_id>/{inbox,work,products,archive}` and
 does not write runtime files into lane source folders.
+
+## Private Lane Packs
+
+Keep real jobs outside the public capability repo. Put them in a separate
+private repository or an ignored local path, then import them at runtime:
+
+```bash
+python3 -m joblane.cli run <lane_id> \
+  --lanes-root /path/to/private/lane-packs/lanes \
+  --root /path/to/private/state
+```
+
+If a private job reveals a missing reusable primitive, add that primitive to
+JobLane with synthetic tests and fixtures. Leave the real job, prompts, surface
+targets, and provider overrides in the private pack.

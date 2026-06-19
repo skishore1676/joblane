@@ -5,6 +5,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from .paths import DEFAULT_LANES_ROOT
+
 
 class ProviderPolicyError(ValueError):
     pass
@@ -102,7 +104,7 @@ def resolve_provider_binding(
 
 def resolved_provider_report(
     *,
-    lanes_root: Path | str = "lanes",
+    lanes_root: Path | str = DEFAULT_LANES_ROOT,
     policy_path: Path | str | None = None,
 ) -> list[dict[str, Any]]:
     from .lane_packs import load_lane_packs
@@ -162,4 +164,3 @@ def _binding(raw: Any, *, source: str) -> ProviderBinding:
         fallback=fallback,
         source=source,
     )
-

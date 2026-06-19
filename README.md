@@ -43,25 +43,31 @@ The first repo slice proves six Jobs at fixture level:
 Each lane is intentionally small. The goal is not completeness yet; the goal is
 to prove that every Job can move through the same durable substrate.
 
-A lane is not registered in Python. The runtime loads `lanes/<id>/lane.json`,
-`workflow.json`, `providers.json`, and optional fixture inputs from the selected
-`--lanes-root`. Adding, removing, or adopting lanes should be folder work.
+A lane is not registered in Python. The runtime loads
+`<lanes-root>/<id>/lane.json`, `workflow.json`, `providers.json`, and optional
+fixture inputs from the selected `--lanes-root`. Adding, removing, or adopting
+lanes should be folder work.
+
+The public starter lane pack lives under
+`examples/lane-packs/starter/lanes`. Real personal or deployment-specific lane
+packs should live outside this repo, or under one of the ignored local paths
+such as `local-lane-packs/`.
 
 ## Quickstart
 
 ```bash
 make check
 python3 -m joblane.cli run public_presence
-python3 -m joblane.cli run fitness --input lanes/fitness/fixtures/sample.json
+python3 -m joblane.cli run fitness --input examples/lane-packs/starter/lanes/fitness/fixtures/sample.json
 python3 -m joblane.cli companion-start reflection
 python3 -m joblane.cli companion-turn <session_id> --message "Remember that proof beats vibes."
 python3 -m joblane.cli ingest-surface --file /path/to/surface-packet.json
 python3 -m joblane.cli decide <run_id> <gate_id> approve
 python3 -m joblane.cli companion-close <session_id>
-python3 -m joblane.cli run-all --fixtures-dir lanes
+python3 -m joblane.cli run-all
 python3 -m joblane.cli board
 python3 -m joblane.cli due
-python3 -m joblane.cli tick --fixtures-dir lanes
+python3 -m joblane.cli tick
 python3 -m joblane.cli providers --policy deployments/local.example/provider-policy.json
 python3 -m joblane.cli control-actions
 python3 -m joblane.cli control-intent experiment park
@@ -72,6 +78,14 @@ python3 -m joblane.cli proof
 python3 -m joblane.cli export-openclaw-skills
 python3 -m joblane.cli install-openclaw-skills --target-dir /path/to/openclaw/workspace-main/skills
 python3 -m joblane.cli status
+```
+
+To run private packs:
+
+```bash
+python3 -m joblane.cli run <lane_id> \
+  --lanes-root /path/to/private/lane-packs/lanes \
+  --root /path/to/private/state
 ```
 
 By default, all state is local under `state/` and all surfaces are sandboxed.

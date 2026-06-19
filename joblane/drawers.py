@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from .lane_packs import load_lane_packs
+from .paths import DEFAULT_LANES_ROOT
 
 
 @dataclass(frozen=True)
@@ -23,7 +24,7 @@ class DrawerRef:
 
 
 class DrawerManager:
-    def __init__(self, root: Path | str, *, lanes_root: Path | str = "lanes") -> None:
+    def __init__(self, root: Path | str, *, lanes_root: Path | str = DEFAULT_LANES_ROOT) -> None:
         self.root = Path(root)
         self.lanes_root = lanes_root
 

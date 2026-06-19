@@ -7,6 +7,7 @@ from .acceptance import evaluate_job_artifacts
 from .contracts import JobArea
 from .lane_packs import load_lane_packs
 from .ledger import Ledger
+from .paths import DEFAULT_LANES_ROOT
 
 
 @dataclass(frozen=True)
@@ -19,7 +20,7 @@ class JobScore:
 
 
 class Scorecard:
-    def __init__(self, ledger: Ledger, lanes_root: Path | str = "lanes") -> None:
+    def __init__(self, ledger: Ledger, lanes_root: Path | str = DEFAULT_LANES_ROOT) -> None:
         self.ledger = ledger
         self.lanes_root = Path(lanes_root)
 

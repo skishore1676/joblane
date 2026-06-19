@@ -10,6 +10,7 @@ from .doctor import Doctor
 from .drawers import DrawerManager
 from .frontdoor import ingest_frontdoor_packet
 from .lane_packs import load_lane_packs
+from .paths import DEFAULT_LANES_ROOT
 from .proof import build_proof_packet
 from .provider_policy import resolved_provider_report
 from .runtime import JobLaneRuntime
@@ -22,6 +23,7 @@ from .surface_inbox import ingest_surface_packet
 
 
 def main() -> int:
+    default_lanes_root = str(DEFAULT_LANES_ROOT)
     parser = argparse.ArgumentParser(prog="joblane")
     parser.add_argument("--root", default="state/local")
     sub = parser.add_subparsers(dest="cmd", required=True)
@@ -29,25 +31,29 @@ def main() -> int:
     run = sub.add_parser("run")
     run.add_argument("lane_id")
     run.add_argument("--root", dest="root_override")
-    run.add_argument("--lanes-root", default="lanes")
+    run.add_argument("--lanes-root", default=default_lanes_root)
     run.add_argument("--input", help="JSON input file for the lane")
 
     run_all = sub.add_parser("run-all")
     run_all.add_argument("--root", dest="root_override")
-    run_all.add_argument("--lanes-root", default="lanes")
-    run_all.add_argument("--fixtures-dir", default="lanes", help="load lanes/<id>/fixtures/sample.json when present")
+    run_all.add_argument("--lanes-root", default=default_lanes_root)
+    run_all.add_argument(
+        "--fixtures-dir",
+        default=default_lanes_root,
+        help="load <lanes-root>/<id>/fixtures/sample.json when present",
+    )
 
     companion_start = sub.add_parser("companion-start")
     companion_start.add_argument("lane_id")
     companion_start.add_argument("--root", dest="root_override")
-    companion_start.add_argument("--lanes-root", default="lanes")
+    companion_start.add_argument("--lanes-root", default=default_lanes_root)
     companion_start.add_argument("--opened-by", default="human")
     companion_start.add_argument("--max-turns", type=int, default=8)
 
     companion_turn = sub.add_parser("companion-turn")
     companion_turn.add_argument("session_id")
     companion_turn.add_argument("--root", dest="root_override")
-    companion_turn.add_argument("--lanes-root", default="lanes")
+    companion_turn.add_argument("--lanes-root", default=default_lanes_root)
     companion_turn.add_argument("--message", required=True)
     companion_turn.add_argument("--speaker", default="human")
 
@@ -70,78 +76,78 @@ def main() -> int:
 
     board = sub.add_parser("board")
     board.add_argument("--root", dest="root_override")
-    board.add_argument("--lanes-root", default="lanes")
+    board.add_argument("--lanes-root", default=default_lanes_root)
 
     doctor = sub.add_parser("doctor")
     doctor.add_argument("--root", dest="root_override")
-    doctor.add_argument("--lanes-root", default="lanes")
+    doctor.add_argument("--lanes-root", default=default_lanes_root)
 
     scorecard = sub.add_parser("scorecard")
     scorecard.add_argument("--root", dest="root_override")
-    scorecard.add_argument("--lanes-root", default="lanes")
+    scorecard.add_argument("--lanes-root", default=default_lanes_root)
 
     due = sub.add_parser("due")
     due.add_argument("--root", dest="root_override")
-    due.add_argument("--lanes-root", default="lanes")
+    due.add_argument("--lanes-root", default=default_lanes_root)
     due.add_argument("--now", help="ISO timestamp for deterministic due checks")
 
     providers = sub.add_parser("providers")
     providers.add_argument("--root", dest="root_override")
-    providers.add_argument("--lanes-root", default="lanes")
+    providers.add_argument("--lanes-root", default=default_lanes_root)
     providers.add_argument("--policy", help="deployment provider-policy.json")
 
     control_actions = sub.add_parser("control-actions")
     control_actions.add_argument("--root", dest="root_override")
-    control_actions.add_argument("--lanes-root", default="lanes")
+    control_actions.add_argument("--lanes-root", default=default_lanes_root)
 
     control_intent = sub.add_parser("control-intent")
     control_intent.add_argument("lane_id")
     control_intent.add_argument("action")
     control_intent.add_argument("--root", dest="root_override")
-    control_intent.add_argument("--lanes-root", default="lanes")
+    control_intent.add_argument("--lanes-root", default=default_lanes_root)
     control_intent.add_argument("--run-id")
     control_intent.add_argument("--note", default="")
 
     drawers = sub.add_parser("drawers")
     drawers.add_argument("--root", dest="root_override")
-    drawers.add_argument("--lanes-root", default="lanes")
+    drawers.add_argument("--lanes-root", default=default_lanes_root)
     drawers.add_argument("--ensure", action="store_true")
 
     tick = sub.add_parser("tick")
     tick.add_argument("--root", dest="root_override")
-    tick.add_argument("--lanes-root", default="lanes")
-    tick.add_argument("--fixtures-dir", default="lanes")
+    tick.add_argument("--lanes-root", default=default_lanes_root)
+    tick.add_argument("--fixtures-dir", default=default_lanes_root)
     tick.add_argument("--now", help="ISO timestamp for deterministic due checks")
     tick.add_argument("--dry-run", action="store_true")
     tick.add_argument("--no-render", action="store_true")
 
     ingest = sub.add_parser("ingest-frontdoor")
     ingest.add_argument("--root", dest="root_override")
-    ingest.add_argument("--lanes-root", default="lanes")
+    ingest.add_argument("--lanes-root", default=default_lanes_root)
     ingest.add_argument("--file", help="JSON packet file; stdin when omitted")
 
     ingest_surface = sub.add_parser("ingest-surface")
     ingest_surface.add_argument("--root", dest="root_override")
-    ingest_surface.add_argument("--lanes-root", default="lanes")
+    ingest_surface.add_argument("--lanes-root", default=default_lanes_root)
     ingest_surface.add_argument("--file", help="JSON packet file; stdin when omitted")
 
     export = sub.add_parser("export-openclaw-skills")
-    export.add_argument("--lanes-root", default="lanes")
+    export.add_argument("--lanes-root", default=default_lanes_root)
     export.add_argument("--out-dir", default="out/openclaw-skills")
 
     install = sub.add_parser("install-openclaw-skills")
-    install.add_argument("--lanes-root", default="lanes")
+    install.add_argument("--lanes-root", default=default_lanes_root)
     install.add_argument("--target-dir", required=True)
     install.add_argument("--prefix", default="joblane-")
 
     proof = sub.add_parser("proof")
     proof.add_argument("--root", default="state/proof")
-    proof.add_argument("--lanes-root", default="lanes")
+    proof.add_argument("--lanes-root", default=default_lanes_root)
     proof.add_argument("--output", default="out/proof/joblane-proof.json")
 
     args = parser.parse_args()
     root = getattr(args, "root_override", None) or args.root
-    lanes_root = getattr(args, "lanes_root", "lanes")
+    lanes_root = getattr(args, "lanes_root", default_lanes_root)
     rt = JobLaneRuntime(root, lanes_root=lanes_root)
     try:
         if args.cmd == "proof":

@@ -7,6 +7,7 @@ from pathlib import Path
 from .contracts import JobArea
 from .lane_packs import load_lane_packs
 from .ledger import Ledger
+from .paths import DEFAULT_LANES_ROOT
 
 
 @dataclass(frozen=True)
@@ -17,7 +18,7 @@ class DoctorReport:
 
 
 class Doctor:
-    def __init__(self, ledger: Ledger, lanes_root: Path | str = "lanes") -> None:
+    def __init__(self, ledger: Ledger, lanes_root: Path | str = DEFAULT_LANES_ROOT) -> None:
         self.ledger = ledger
         self.lanes_root = Path(lanes_root)
 
@@ -51,4 +52,3 @@ class Doctor:
             "runs": len(status["runs"]),
         }
         return DoctorReport(ok=not issues, issues=tuple(issues), summary=summary)
-

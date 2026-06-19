@@ -5,6 +5,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from tests.paths import STARTER_LANES_ROOT
 from joblane.lane_packs import load_lane_packs
 from joblane.runtime import JobLaneRuntime
 from joblane.scheduler import Scheduler
@@ -14,7 +15,7 @@ from joblane.schedules import due_status, parse_schedule
 class SchedulerTest(unittest.TestCase):
     def test_lane_packs_declare_portable_schedules(self) -> None:
         repo = Path(__file__).resolve().parents[1]
-        packs = load_lane_packs(repo / "lanes")
+        packs = load_lane_packs(STARTER_LANES_ROOT)
 
         self.assertEqual(packs["fitness"].schedule.kind, "manual")
         self.assertEqual(packs["chief_of_staff"].schedule.kind, "daily")
@@ -54,14 +55,14 @@ class SchedulerTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             rt = JobLaneRuntime(Path(tmp))
             try:
-                due_before = Scheduler(rt.ledger, lanes_root=repo / "lanes").due_lanes(
+                due_before = Scheduler(rt.ledger, lanes_root=STARTER_LANES_ROOT).due_lanes(
                     now="2026-06-19T17:00:00"
                 )
                 self.assertIn("chief_of_staff", due_before)
                 self.assertIn("reflection", due_before)
 
                 rt.run_lane("chief_of_staff")
-                due_after = Scheduler(rt.ledger, lanes_root=repo / "lanes").due_lanes(
+                due_after = Scheduler(rt.ledger, lanes_root=STARTER_LANES_ROOT).due_lanes(
                     now=datetime.now(UTC).replace(tzinfo=None)
                 )
                 self.assertNotIn("chief_of_staff", due_after)

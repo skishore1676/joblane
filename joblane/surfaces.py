@@ -5,6 +5,7 @@ from pathlib import Path
 
 from .gates import content_hash
 from .ledger import Ledger
+from .paths import DEFAULT_LANES_ROOT
 from .scheduler import Scheduler
 from .scorecard import Scorecard
 
@@ -34,7 +35,7 @@ class MarkdownSurface:
             paths.append(path)
         return paths
 
-    def render_board(self, *, lanes_root: Path | str = "lanes") -> Path:
+    def render_board(self, *, lanes_root: Path | str = DEFAULT_LANES_ROOT) -> Path:
         status = self.ledger.status()
         scorecard = Scorecard(self.ledger, lanes_root=lanes_root).to_dict()
         due = Scheduler(self.ledger, lanes_root=lanes_root).due()

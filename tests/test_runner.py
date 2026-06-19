@@ -7,6 +7,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from tests.paths import STARTER_LANES_ROOT
 from joblane.runtime import JobLaneRuntime
 from joblane.runner import DeploymentRunner
 
@@ -19,8 +20,8 @@ class DeploymentRunnerTest(unittest.TestCase):
             try:
                 result = DeploymentRunner(
                     rt,
-                    lanes_root=repo / "lanes",
-                    fixtures_dir=repo / "lanes",
+                    lanes_root=STARTER_LANES_ROOT,
+                    fixtures_dir=STARTER_LANES_ROOT,
                 ).tick(now="2026-06-19T17:00:00")
 
                 self.assertEqual(set(result.run_ids), {"chief_of_staff", "reflection", "trading_intel"})
@@ -40,8 +41,8 @@ class DeploymentRunnerTest(unittest.TestCase):
 
                 second = DeploymentRunner(
                     rt,
-                    lanes_root=repo / "lanes",
-                    fixtures_dir=repo / "lanes",
+                    lanes_root=STARTER_LANES_ROOT,
+                    fixtures_dir=STARTER_LANES_ROOT,
                 ).tick(now="2026-06-19T17:30:00")
                 self.assertEqual(second.run_ids, {})
             finally:
@@ -52,7 +53,7 @@ class DeploymentRunnerTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             rt = JobLaneRuntime(Path(tmp))
             try:
-                result = DeploymentRunner(rt, lanes_root=repo / "lanes").tick(
+                result = DeploymentRunner(rt, lanes_root=STARTER_LANES_ROOT).tick(
                     now="2026-06-19T17:00:00",
                     dry_run=True,
                 )
@@ -76,9 +77,9 @@ class DeploymentRunnerTest(unittest.TestCase):
                         "--now",
                         "2026-06-19T17:00:00",
                         "--lanes-root",
-                        str(repo / "lanes"),
+                        str(STARTER_LANES_ROOT),
                         "--fixtures-dir",
-                        str(repo / "lanes"),
+                        str(STARTER_LANES_ROOT),
                         "--root",
                         tmp,
                     ],
