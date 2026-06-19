@@ -8,6 +8,7 @@ from pathlib import Path
 from .doctor import Doctor
 from .frontdoor import ingest_frontdoor_packet
 from .proof import build_proof_packet
+from .provider_policy import resolved_provider_report
 from .runtime import JobLaneRuntime
 from .runner import DeploymentRunner
 from .scheduler import Scheduler
@@ -76,6 +77,11 @@ def main() -> int:
     due.add_argument("--root", dest="root_override")
     due.add_argument("--lanes-root", default="lanes")
     due.add_argument("--now", help="ISO timestamp for deterministic due checks")
+
+    providers = sub.add_parser("providers")
+    providers.add_argument("--root", dest="root_override")
+    providers.add_argument("--lanes-root", default="lanes")
+    providers.add_argument("--policy", help="deployment provider-policy.json")
 
     tick = sub.add_parser("tick")
     tick.add_argument("--root", dest="root_override")
@@ -200,6 +206,17 @@ def main() -> int:
             print(
                 json.dumps(
                     Scheduler(rt.ledger, lanes_root=args.lanes_root).due(now=args.now),
+                    indent=2,
+                    sort_keys=True,
+                )
+            )
+        elif args.cmd == "providers":
+            print(
+                json.dumps(
+                    resolved_provider_report(
+                        lanes_root=args.lanes_root,
+                        policy_path=args.policy,
+                    ),
                     indent=2,
                     sort_keys=True,
                 )

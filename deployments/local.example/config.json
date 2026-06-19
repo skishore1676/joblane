@@ -7,6 +7,7 @@
   },
   "providers": {
     "default": "deterministic",
+    "policy": "deployments/local.example/provider-policy.json",
     "openclaw": {
       "agent": "main",
       "trusted_input_only": true
@@ -14,4 +15,3 @@
   },
   "live_effects_enabled": false
 }
-

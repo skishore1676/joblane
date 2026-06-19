@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from .contracts import JobArea, Orchestrator, RiskClass
+from .provider_policy import LaneProviderSpec, load_lane_provider_spec
 from .schedules import ScheduleSpec, parse_schedule
 from .workflows import WorkflowSpec, load_workflow
 
@@ -20,6 +21,7 @@ class LanePack:
     live_effects: bool
     description: str
     schedule: ScheduleSpec
+    providers: LaneProviderSpec
     workflow: WorkflowSpec
     path: Path
 
@@ -75,6 +77,10 @@ def load_lane_pack(path: Path) -> LanePack:
         schedule = parse_schedule(raw["schedule"])
     except ValueError as exc:
         raise LanePackError(f"{meta_path} has invalid schedule: {exc}") from exc
+    try:
+        providers = load_lane_provider_spec(path / "providers.json")
+    except ValueError as exc:
+        raise LanePackError(f"{path / 'providers.json'} invalid: {exc}") from exc
     return LanePack(
         lane_id=lane_id,
         job=job,
@@ -85,6 +91,7 @@ def load_lane_pack(path: Path) -> LanePack:
         live_effects=bool(raw["live_effects"]),
         description=str(raw["description"]),
         schedule=schedule,
+        providers=providers,
         workflow=workflow,
         path=path,
     )

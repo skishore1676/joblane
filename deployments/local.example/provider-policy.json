@@ -1,0 +1,19 @@
+{
+  "schema": "joblane.provider_policy.v1",
+  "default": {
+    "provider": "deterministic"
+  },
+  "lanes": {
+    "reflection": {
+      "actors": {
+        "companion": {
+          "provider": "openclaw",
+          "options": {"agent": "main", "trusted_input_only": true},
+          "fallback": [
+            {"provider": "deterministic"}
+          ]
+        }
+      }
+    }
+  }
+}

@@ -12,6 +12,7 @@ JobLane has six stable nouns:
 - **Surface Inbox**: durable input provenance for external adapters.
 - **Schedule**: portable lane-owned recurrence declaration.
 - **Runner**: one-shot due-lane executor that writes local proof.
+- **Provider Policy**: deployment-owned worker binding and failover.
 
 Providers are workers. Control is a steering layer. OpenClaw is a front door or
 worker unless a specific workflow elects it as orchestrator of record.
@@ -29,6 +30,7 @@ worker unless a specific workflow elects it as orchestrator of record.
 | External input provenance | Surface inbox |
 | Recurrence declaration | Lane pack schedule |
 | Scheduled execution | Deployment runner |
+| Worker binding | Provider policy |
 | Safe steering | Control |
 
 ## One-Orchestrator Rule
@@ -91,3 +93,11 @@ the board, and records a local `runner_tick` receipt. A future daemon or cron
 entry should do no more than call this command. The runner does not bypass
 gates, publish publicly, trade, send messages, mutate auth, or perform live
 external effects.
+
+## Provider Policy
+
+Lane packs name actors and ship portable defaults in `providers.json`.
+Deployments bind those actors to real workers in `provider-policy.json`.
+`joblane providers` prints the resolved provider and failover chain for every
+lane actor. This keeps model/runtime choices out of workflow definitions and
+lets an adopter flip workers without editing lane content.

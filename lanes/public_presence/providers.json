@@ -1,0 +1,7 @@
+{
+  "schema": "joblane.providers.v1",
+  "actors": {
+    "writer": {"provider": "deterministic"},
+    "reviewer": {"provider": "deterministic"}
+  }
+}

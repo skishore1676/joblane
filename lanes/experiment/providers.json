@@ -1,0 +1,6 @@
+{
+  "schema": "joblane.providers.v1",
+  "actors": {
+    "runner": {"provider": "deterministic"}
+  }
+}

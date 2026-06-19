@@ -4,8 +4,9 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from joblane.contracts import ProviderResult
 from joblane.control import ControlTower
-from joblane.providers import DeterministicProvider, OpenClawProvider, ProviderRequest
+from joblane.providers import DeterministicProvider, FailoverProvider, OpenClawProvider, ProviderRequest
 from joblane.runtime import JobLaneRuntime
 
 
@@ -24,6 +25,31 @@ class ProviderAndControlTest(unittest.TestCase):
         self.assertEqual(result.status, "failed")
         self.assertEqual(result.data["guard"], "untrusted_input_refused")
 
+    def test_failover_cascades_infra_failure(self) -> None:
+        result = FailoverProvider([_FailingProvider(), DeterministicProvider()]).run(
+            ProviderRequest(role="reviewer", prompt="judge", context={}, allowed_outcomes=("ok",))
+        )
+
+        self.assertEqual(result.status, "succeeded")
+        self.assertEqual(result.data["provider_layer"], 1)
+        self.assertEqual(result.data["failover_chain"], ("failing", "deterministic"))
+        self.assertEqual(len(result.data["failover_failures"]), 1)
+
+    def test_failover_does_not_reroll_valid_negative_outcome(self) -> None:
+        result = FailoverProvider([_NegativeProvider(), DeterministicProvider()]).run(
+            ProviderRequest(
+                role="reviewer",
+                prompt="judge",
+                context={},
+                allowed_outcomes=("revise", "approve"),
+            )
+        )
+
+        self.assertEqual(result.status, "succeeded")
+        self.assertEqual(result.outcome, "revise")
+        self.assertEqual(result.data["provider_layer"], 0)
+        self.assertEqual(result.data["failover_failures"], [])
+
     def test_control_tower_reads_waiting_from_ledger(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             rt = JobLaneRuntime(Path(tmp))
@@ -36,6 +62,29 @@ class ProviderAndControlTest(unittest.TestCase):
                 rt.close()
 
 
+class _FailingProvider:
+    provider_id = "failing"
+
+    def run(self, request: ProviderRequest) -> ProviderResult:
+        return ProviderResult(
+            status="failed",
+            output_text="",
+            failure_summary="simulated infra outage",
+            data={"provider": self.provider_id},
+        )
+
+
+class _NegativeProvider:
+    provider_id = "negative"
+
+    def run(self, request: ProviderRequest) -> ProviderResult:
+        return ProviderResult(
+            status="succeeded",
+            outcome="revise",
+            output_text="valid negative verdict",
+            data={"provider": self.provider_id, "live_effect": False},
+        )
+
+
 if __name__ == "__main__":
     unittest.main()
-

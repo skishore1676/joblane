@@ -13,6 +13,7 @@ python3 -m joblane.cli render --root state/local
 python3 -m joblane.cli board --root state/local
 python3 -m joblane.cli due --root state/local
 python3 -m joblane.cli tick --fixtures-dir lanes --root state/local
+python3 -m joblane.cli providers --policy deployments/local.example/provider-policy.json --root state/local
 python3 -m joblane.cli decide <run_id> <gate_id> approve --root state/local
 python3 -m joblane.cli companion-close <session_id> --root state/local
 python3 -m joblane.cli status --root state/local
@@ -59,3 +60,12 @@ python3 -m joblane.cli tick --now 2026-06-19T17:00:00 --fixtures-dir lanes --roo
 Tick renders local Markdown surfaces and writes a `runner_tick` receipt. It is
 safe to call from cron or launchd later because the scheduling loop remains
 outside the lane code and the runner still uses normal gates.
+
+Use `joblane providers` to inspect which worker each lane actor resolves to:
+
+```bash
+python3 -m joblane.cli providers --policy deployments/local.example/provider-policy.json
+```
+
+The command is read-only. It lets a deployment flip workers without editing lane
+packs.

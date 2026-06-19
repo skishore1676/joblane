@@ -90,6 +90,20 @@ A provider returns structured work for a role. A provider may be deterministic,
 OpenClaw, Claude, Codex, a local script, or a future runtime. Provider failure
 may cascade; a valid semantic verdict must not be rerolled.
 
+Lane packs declare portable actor defaults in `providers.json`. Deployments may
+override those defaults through `provider-policy.json`. Resolution order is:
+
+- deployment lane actor override
+- deployment lane default
+- deployment global default
+- lane-pack actor default
+- lane-pack default
+- built-in deterministic default
+
+Failover chains are ordered. Infra failure cascades to the next layer; a
+successful provider result with a negative outcome such as `revise` is still a
+valid result and must not be rerolled.
+
 ## Control
 
 Control reads ledger state and writes validated intents. It never mutates
