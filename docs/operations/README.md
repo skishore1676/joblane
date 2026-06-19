@@ -11,6 +11,7 @@ python3 -m joblane.cli companion-turn <session_id> --message "Remember that one 
 python3 -m joblane.cli ingest-surface --file surface-packet.json --root state/local
 python3 -m joblane.cli render --root state/local
 python3 -m joblane.cli board --root state/local
+python3 -m joblane.cli due --root state/local
 python3 -m joblane.cli decide <run_id> <gate_id> approve --root state/local
 python3 -m joblane.cli companion-close <session_id> --root state/local
 python3 -m joblane.cli status --root state/local
@@ -39,3 +40,11 @@ A minimal surface packet looks like:
 
 The same contract can be used by Telegram, Apple Notes, Apple Messages, OpenClaw,
 or any future surface adapter.
+
+Schedules are lane-owned declarations. Use `joblane due` for readback:
+
+```bash
+python3 -m joblane.cli due --now 2026-06-19T17:00:00 --root state/local
+```
+
+This command does not install or mutate a scheduler.

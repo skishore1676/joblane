@@ -6,6 +6,6 @@
   "orchestrator": "joblane",
   "risk_class": "reversible",
   "live_effects": false,
+  "schedule": {"kind": "daily", "time": "08:30"},
   "description": "Morning shape-mode with delegate, push, and decline calls grounded in intentions."
 }
-

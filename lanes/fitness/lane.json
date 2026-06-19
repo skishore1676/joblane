@@ -6,6 +6,6 @@
   "orchestrator": "joblane",
   "risk_class": "reversible",
   "live_effects": false,
+  "schedule": {"kind": "manual"},
   "description": "In-gym coaching and one-message workout logging into gated body memory."
 }
-

@@ -6,6 +6,6 @@
   "orchestrator": "joblane",
   "risk_class": "reversible",
   "live_effects": false,
+  "schedule": {"kind": "weekly", "days": ["fri"], "time": "16:00"},
   "description": "Memory-backed reflection with durable takeaways promoted only through a gate."
 }
-

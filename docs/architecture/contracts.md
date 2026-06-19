@@ -13,6 +13,13 @@ A lane pack owns a `workflow.json` file. The default schema is
 live-effect declaration. A gated workflow must declare content-bound gates with
 allowed decisions. Default lane packs may not enable live effects.
 
+## Schedule
+
+A lane pack owns its portable schedule declaration in `lane.json`. Supported
+kinds are `manual`, `daily`, `weekly`, and `interval_hours`. The schedule
+contract answers due/not-due with reasons from lane metadata plus the ledger's
+last run time. It does not mutate cron, launchd, or any external scheduler.
+
 ## Gate
 
 A valid gate decision must:

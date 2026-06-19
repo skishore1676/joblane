@@ -10,6 +10,7 @@ JobLane has six stable nouns:
 - **Companion Session**: bounded human/front-door conversation attached to a lane run.
 - **Surface**: projection/input channel, never state.
 - **Surface Inbox**: durable input provenance for external adapters.
+- **Schedule**: portable lane-owned recurrence declaration.
 
 Providers are workers. Control is a steering layer. OpenClaw is a front door or
 worker unless a specific workflow elects it as orchestrator of record.
@@ -25,6 +26,7 @@ worker unless a specific workflow elects it as orchestrator of record.
 | Chat/session labor | Provider/front door |
 | Operator views | Surfaces |
 | External input provenance | Surface inbox |
+| Recurrence declaration | Lane pack schedule |
 | Safe steering | Control |
 
 ## One-Orchestrator Rule
@@ -72,3 +74,10 @@ The ledger records `surface`, `external_id`, `intent`, payload, status, and
 routed result before any effect is considered. Duplicate delivery with the same
 `surface` and `external_id` returns the original result instead of double-running
 the workflow.
+
+## Schedules
+
+Schedules live in `lane.json` so they travel with the lane pack. The current
+runtime exposes readback through `joblane due`; it does not install cron jobs or
+start a daemon. A future deployment runner can call the same due contract and
+then run only the lanes that are due.

@@ -103,6 +103,32 @@ class CliTest(unittest.TestCase):
             self.assertEqual(status["counts"]["companion_turns"], 1)
             self.assertEqual(status["waiting_gates"][0]["gate_id"], "companion_memory_gate_1")
 
+    def test_due_cli_reports_scheduled_lanes(self) -> None:
+        repo = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as tmp:
+            due = json.loads(
+                subprocess.run(
+                    [
+                        sys.executable,
+                        "-m",
+                        "joblane.cli",
+                        "due",
+                        "--now",
+                        "2026-06-19T17:00:00",
+                        "--lanes-root",
+                        str(repo / "lanes"),
+                        "--root",
+                        tmp,
+                    ],
+                    check=True,
+                    capture_output=True,
+                    text=True,
+                ).stdout
+            )
+            due_ids = {row["lane_id"] for row in due if row["due"]}
+            self.assertIn("chief_of_staff", due_ids)
+            self.assertIn("reflection", due_ids)
+
 
 if __name__ == "__main__":
     unittest.main()

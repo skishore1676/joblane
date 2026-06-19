@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from .contracts import JobArea, Orchestrator, RiskClass
+from .schedules import ScheduleSpec, parse_schedule
 from .workflows import WorkflowSpec, load_workflow
 
 
@@ -18,6 +19,7 @@ class LanePack:
     risk_class: RiskClass
     live_effects: bool
     description: str
+    schedule: ScheduleSpec
     workflow: WorkflowSpec
     path: Path
 
@@ -40,6 +42,7 @@ def load_lane_pack(path: Path) -> LanePack:
         "risk_class",
         "live_effects",
         "description",
+        "schedule",
     }
     missing = sorted(required - raw.keys())
     if missing:
@@ -68,6 +71,10 @@ def load_lane_pack(path: Path) -> LanePack:
         raise LanePackError(f"{workflow_path} orchestrator must match lane.json")
     if workflow.live_effects or bool(raw["live_effects"]):
         raise LanePackError(f"{path} may not enable live effects in the default lane pack")
+    try:
+        schedule = parse_schedule(raw["schedule"])
+    except ValueError as exc:
+        raise LanePackError(f"{meta_path} has invalid schedule: {exc}") from exc
     return LanePack(
         lane_id=lane_id,
         job=job,
@@ -77,6 +84,7 @@ def load_lane_pack(path: Path) -> LanePack:
         risk_class=risk_class,
         live_effects=bool(raw["live_effects"]),
         description=str(raw["description"]),
+        schedule=schedule,
         workflow=workflow,
         path=path,
     )

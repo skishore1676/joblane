@@ -6,6 +6,6 @@
   "orchestrator": "joblane",
   "risk_class": "external_irreversible",
   "live_effects": false,
+  "schedule": {"kind": "daily", "time": "18:00"},
   "description": "Minimal approve/skip experiment lane with failure alert fixture."
 }
-

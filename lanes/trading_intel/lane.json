@@ -6,6 +6,6 @@
   "orchestrator": "joblane",
   "risk_class": "read_only",
   "live_effects": false,
+  "schedule": {"kind": "daily", "time": "16:00"},
   "description": "Read-only trading health and anomaly synthesis with no order authority."
 }
-

@@ -25,6 +25,7 @@ class LanePackConformanceTest(unittest.TestCase):
         self.assertTrue(all(not pack.live_effects for pack in packs.values()))
         self.assertTrue(all(pack.workflow.stages for pack in packs.values()))
         self.assertTrue(all(pack.workflow.orchestrator == pack.orchestrator for pack in packs.values()))
+        self.assertTrue(all(pack.schedule.kind for pack in packs.values()))
 
     def test_gated_workflows_declare_content_bound_gates(self) -> None:
         packs = load_lane_packs(Path(__file__).resolve().parents[1] / "lanes")

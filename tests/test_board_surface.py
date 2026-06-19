@@ -21,6 +21,7 @@ class BoardSurfaceTest(unittest.TestCase):
                 path = surface.render_board(lanes_root=repo / "lanes")
                 text = path.read_text(encoding="utf-8")
                 self.assertIn("Needs Attention", text)
+                self.assertIn("Schedule Due", text)
                 self.assertIn("taste_gate", text)
                 self.assertIn("| A |", text)
                 path.unlink()

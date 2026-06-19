@@ -9,6 +9,7 @@ from .doctor import Doctor
 from .frontdoor import ingest_frontdoor_packet
 from .proof import build_proof_packet
 from .runtime import JobLaneRuntime
+from .scheduler import Scheduler
 from .scorecard import Scorecard
 from .skill_export import export_openclaw_skills, install_openclaw_skills
 from .surfaces import MarkdownSurface
@@ -69,6 +70,11 @@ def main() -> int:
     scorecard = sub.add_parser("scorecard")
     scorecard.add_argument("--root", dest="root_override")
     scorecard.add_argument("--lanes-root", default="lanes")
+
+    due = sub.add_parser("due")
+    due.add_argument("--root", dest="root_override")
+    due.add_argument("--lanes-root", default="lanes")
+    due.add_argument("--now", help="ISO timestamp for deterministic due checks")
 
     ingest = sub.add_parser("ingest-frontdoor")
     ingest.add_argument("--root", dest="root_override")
@@ -177,6 +183,14 @@ def main() -> int:
             print(
                 json.dumps(
                     Scorecard(rt.ledger, lanes_root=args.lanes_root).to_dict(),
+                    indent=2,
+                    sort_keys=True,
+                )
+            )
+        elif args.cmd == "due":
+            print(
+                json.dumps(
+                    Scheduler(rt.ledger, lanes_root=args.lanes_root).due(now=args.now),
                     indent=2,
                     sort_keys=True,
                 )

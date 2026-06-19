@@ -5,6 +5,7 @@ from pathlib import Path
 
 from .gates import content_hash
 from .ledger import Ledger
+from .scheduler import Scheduler
 from .scorecard import Scorecard
 
 
@@ -36,8 +37,9 @@ class MarkdownSurface:
     def render_board(self, *, lanes_root: Path | str = "lanes") -> Path:
         status = self.ledger.status()
         scorecard = Scorecard(self.ledger, lanes_root=lanes_root).to_dict()
+        due = Scheduler(self.ledger, lanes_root=lanes_root).due()
         path = self.root / "BOARD.md"
-        body = self._render_board(status=status, scorecard=scorecard)
+        body = self._render_board(status=status, scorecard=scorecard, due=due)
         path.write_text(body, encoding="utf-8")
         self.ledger.record_surface_ref(
             surface_ref="markdown:board",
@@ -48,7 +50,7 @@ class MarkdownSurface:
         )
         return path
 
-    def _render_board(self, *, status: dict, scorecard: dict) -> str:
+    def _render_board(self, *, status: dict, scorecard: dict, due: list[dict]) -> str:
         lines = [
             "# JobLane Board",
             "",
@@ -72,6 +74,13 @@ class MarkdownSurface:
                 )
         else:
             lines.append("- No active companion sessions.")
+        lines.extend(["", "## Schedule Due", ""])
+        due_rows = [item for item in due if item["due"]]
+        if due_rows:
+            for item in due_rows:
+                lines.append(f"- `{item['lane_id']}`: {item['reason']}")
+        else:
+            lines.append("- No scheduled lanes are currently due.")
         lines.extend(["", "## Job Coverage", ""])
         lines.append("| Job | Score | Status |")
         lines.append("|---|---:|---|")
