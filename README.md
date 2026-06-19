@@ -42,6 +42,7 @@ python3 -m joblane.cli run public_presence
 python3 -m joblane.cli run fitness --input lanes/fitness/fixtures/sample.json
 python3 -m joblane.cli decide <run_id> <gate_id> approve
 python3 -m joblane.cli run-all --fixtures-dir lanes
+python3 -m joblane.cli board
 python3 -m joblane.cli doctor
 python3 -m joblane.cli scorecard
 python3 -m joblane.cli proof

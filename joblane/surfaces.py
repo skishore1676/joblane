@@ -5,6 +5,7 @@ from pathlib import Path
 
 from .gates import content_hash
 from .ledger import Ledger
+from .scorecard import Scorecard
 
 
 class MarkdownSurface:
@@ -31,6 +32,50 @@ class MarkdownSurface:
             )
             paths.append(path)
         return paths
+
+    def render_board(self, *, lanes_root: Path | str = "lanes") -> Path:
+        status = self.ledger.status()
+        scorecard = Scorecard(self.ledger, lanes_root=lanes_root).to_dict()
+        path = self.root / "BOARD.md"
+        body = self._render_board(status=status, scorecard=scorecard)
+        path.write_text(body, encoding="utf-8")
+        self.ledger.record_surface_ref(
+            surface_ref="markdown:board",
+            run_id="system",
+            surface=self.surface_id,
+            content_hash=content_hash(body),
+            path=str(path),
+        )
+        return path
+
+    def _render_board(self, *, status: dict, scorecard: dict) -> str:
+        lines = [
+            "# JobLane Board",
+            "",
+            "This file is a projection of the ledger. Deleting it loses no state.",
+            "",
+            "## Needs Attention",
+            "",
+        ]
+        waiting = status["waiting_gates"]
+        if waiting:
+            for item in waiting:
+                lines.append(f"- `{item['run_id']}` at `{item['gate_id']}`: {item['prompt']}")
+        else:
+            lines.append("- Nothing waiting on a human decision.")
+        lines.extend(["", "## Job Coverage", ""])
+        lines.append("| Job | Score | Status |")
+        lines.append("|---|---:|---|")
+        for job in sorted(scorecard):
+            row = scorecard[job]
+            lines.append(f"| {job} | {row['score']} | {row['status']} |")
+        lines.extend(["", "## Recent Runs", ""])
+        for item in status["runs"][-10:]:
+            lines.append(
+                f"- `{item['run_id']}` · lane `{item['lane_id']}` · Job {item['job']} · `{item['status']}`"
+            )
+        lines.append("")
+        return "\n".join(lines)
 
     def _render_gate(self, row) -> str:
         artifact = json.loads(row["content_json"]) if row["content_json"] else None
@@ -71,4 +116,3 @@ class TelegramSandboxSurface:
             content_hash=content_hash(packet),
             path=str(self.outbox),
         )
-

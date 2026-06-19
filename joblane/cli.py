@@ -41,6 +41,10 @@ def main() -> int:
     render = sub.add_parser("render")
     render.add_argument("--root", dest="root_override")
 
+    board = sub.add_parser("board")
+    board.add_argument("--root", dest="root_override")
+    board.add_argument("--lanes-root", default="lanes")
+
     doctor = sub.add_parser("doctor")
     doctor.add_argument("--root", dest="root_override")
     doctor.add_argument("--lanes-root", default="lanes")
@@ -106,6 +110,11 @@ def main() -> int:
         elif args.cmd == "render":
             paths = MarkdownSurface(Path(root) / "surfaces" / "markdown", rt.ledger).render_waiting_gates()
             print(json.dumps([str(path) for path in paths], indent=2))
+        elif args.cmd == "board":
+            path = MarkdownSurface(Path(root) / "surfaces" / "markdown", rt.ledger).render_board(
+                lanes_root=args.lanes_root
+            )
+            print(json.dumps({"board": str(path)}, indent=2))
         elif args.cmd == "doctor":
             report = Doctor(rt.ledger, lanes_root=args.lanes_root).run()
             print(
