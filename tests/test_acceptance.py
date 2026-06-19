@@ -33,6 +33,40 @@ class AcceptanceTest(unittest.TestCase):
         )
         self.assertTrue(result.ok)
 
+    def test_fitness_requires_structured_log(self) -> None:
+        result = evaluate_job_artifacts(
+            "B",
+            [
+                row(
+                    {
+                        "today": "lift",
+                        "main_lifts": ["a", "b", "c"],
+                        "parsed_log_candidate": "raw text",
+                        "candidate_id": "c1",
+                        "progression_checks": [],
+                        "durable_write_requires_gate": True,
+                    }
+                )
+            ],
+        )
+        self.assertFalse(result.ok)
+
+    def test_reflection_requires_themes(self) -> None:
+        result = evaluate_job_artifacts(
+            "E",
+            [
+                row(
+                    {
+                        "candidate_id": "c1",
+                        "prompt": "p",
+                        "recall": {},
+                        "durable_write_requires_gate": True,
+                    }
+                )
+            ],
+        )
+        self.assertFalse(result.ok)
+
 
 if __name__ == "__main__":
     unittest.main()

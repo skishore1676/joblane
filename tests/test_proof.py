@@ -19,6 +19,7 @@ class ProofTest(unittest.TestCase):
             )
             packet = json.loads(out.read_text(encoding="utf-8"))
             self.assertEqual(packet["schema"], "joblane.proof.v1")
+            self.assertEqual(packet["lanes_root"], str(repo / "lanes"))
             self.assertTrue(packet["doctor"]["ok"])
             self.assertEqual(set(packet["scorecard"]), {"A", "B", "C", "D", "E", "F"})
             self.assertFalse(packet["protected_gate_statement"]["public_publish"])

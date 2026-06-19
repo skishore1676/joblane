@@ -27,6 +27,18 @@ class EffectsTest(unittest.TestCase):
         receipts = [dict(row) for row in self.rt.ledger.rows("receipts")]
         self.assertTrue(any(row["kind"] == "memory_promoted" for row in receipts))
 
+    def test_fitness_approval_promotes_structured_workout_log(self) -> None:
+        run_id = self.rt.run_lane(
+            "fitness",
+            inputs={
+                "today_log": "squat 190x5 RIR2; press 100x5 RIR2; row 120x8 RIR2; no pain"
+            },
+        )
+        self.rt.decide_gate(run_id=run_id, gate_id="log_gate", decision="approve")
+        packet = MemoryStore(self.rt.ledger, "fitness").recall(namespace="gym")
+        self.assertEqual(len(packet["slow"]), 1)
+        self.assertGreaterEqual(len(packet["slow"][0]["value"]["sets"]), 3)
+
     def test_reject_does_not_promote_memory(self) -> None:
         run_id = self.rt.run_lane("fitness")
         self.rt.decide_gate(run_id=run_id, gate_id="log_gate", decision="skip")

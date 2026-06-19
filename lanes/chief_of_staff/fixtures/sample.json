@@ -1,0 +1,18 @@
+{
+  "intentions": [
+    "Finish one durable proof slice before opening new architecture work.",
+    "Keep health maintenance lightweight but real.",
+    "Avoid starting new trading experiments until the review lane is stable."
+  ],
+  "calendar": [
+    {"time": "09:00", "title": "planning block", "energy": "high"},
+    {"time": "11:30", "title": "team check-in", "energy": "medium"},
+    {"time": "15:00", "title": "deep work", "energy": "medium"}
+  ],
+  "inbox": [
+    "Open pull request needs a yes/no review.",
+    "A low-priority research idea can wait.",
+    "Schedule gym if energy is still medium after lunch."
+  ]
+}
+

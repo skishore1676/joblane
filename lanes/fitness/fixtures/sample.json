@@ -1,0 +1,15 @@
+{
+  "goal": "strength maintenance during a busy week",
+  "available_minutes": 45,
+  "last_session": {
+    "date": "2026-06-17",
+    "sets": [
+      {"exercise": "squat", "load": 185, "reps": 5, "rir": 2},
+      {"exercise": "press", "load": 95, "reps": 5, "rir": 2},
+      {"exercise": "row", "load": 115, "reps": 8, "rir": 3}
+    ],
+    "pain_flags": []
+  },
+  "today_log": "squat 190x5 RIR2; press 100x5 RIR2; row 120x8 RIR2; no pain"
+}
+

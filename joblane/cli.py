@@ -22,9 +22,11 @@ def main() -> int:
     run = sub.add_parser("run")
     run.add_argument("lane_id")
     run.add_argument("--root", dest="root_override")
+    run.add_argument("--input", help="JSON input file for the lane")
 
     run_all = sub.add_parser("run-all")
     run_all.add_argument("--root", dest="root_override")
+    run_all.add_argument("--fixtures-dir", default="lanes", help="load lanes/<id>/fixtures/sample.json when present")
 
     status = sub.add_parser("status")
     status.add_argument("--root", dest="root_override")
@@ -80,12 +82,16 @@ def main() -> int:
             print(json.dumps({"proof": str(path)}, indent=2))
             return 0
         if args.cmd == "run":
-            run_id = rt.run_lane(args.lane_id)
+            inputs = _read_json_file(args.input) if args.input else {}
+            run_id = rt.run_lane(args.lane_id, inputs=inputs)
             print(run_id)
         elif args.cmd == "run-all":
             from .lanes import LANES
 
-            run_ids = {lane_id: rt.run_lane(lane_id) for lane_id in LANES}
+            run_ids = {
+                lane_id: rt.run_lane(lane_id, inputs=_fixture_inputs(args.fixtures_dir, lane_id))
+                for lane_id in LANES
+            }
             print(json.dumps(run_ids, indent=2, sort_keys=True))
         elif args.cmd == "status":
             print(json.dumps(rt.status(), indent=2, sort_keys=True))
@@ -137,6 +143,20 @@ def main() -> int:
         return 0
     finally:
         rt.close()
+
+
+def _read_json_file(path: str | None) -> dict:
+    if not path:
+        return {}
+    value = json.loads(Path(path).read_text(encoding="utf-8"))
+    if not isinstance(value, dict):
+        raise SystemExit(f"joblane: input file must contain a JSON object: {path}")
+    return value
+
+
+def _fixture_inputs(fixtures_dir: str, lane_id: str) -> dict:
+    path = Path(fixtures_dir) / lane_id / "fixtures" / "sample.json"
+    return _read_json_file(str(path)) if path.exists() else {}
 
 
 if __name__ == "__main__":

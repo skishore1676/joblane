@@ -1,0 +1,9 @@
+{
+  "checks": [
+    {"name": "broker_snapshot", "status": "ok", "evidence": "fixture://broker"},
+    {"name": "strategy_cache", "status": "stale", "evidence": "fixture://strategy-cache"},
+    {"name": "order_reconciliation", "status": "ok", "evidence": "fixture://orders"}
+  ],
+  "health": "yellow"
+}
+

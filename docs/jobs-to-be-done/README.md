@@ -19,8 +19,8 @@ The scorecard does not give credit for a lane name alone. Each Job needs a
 typed artifact with a Job-specific acceptance signal:
 
 - A: draft-only public packet with multiple posts, review questions, and no live publish.
-- B: in-gym session with progression checks and a gated log candidate.
+- B: in-gym session with structured set parsing, progression checks, and a gated log candidate.
 - C: read-only trading synthesis with evidence refs and no trade authority.
-- D: morning plan with delegate, push, decline, commitments, and recall.
-- E: reflection takeaway with recall and gated durable-memory promotion.
+- D: morning plan with time blocks, delegate, push, decline, commitments, rationale, and recall.
+- E: reflection takeaway with themes, recall, and gated durable-memory promotion.
 - F: minimal approve/skip experiment packet with failure awareness.

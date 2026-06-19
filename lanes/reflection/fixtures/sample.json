@@ -1,0 +1,13 @@
+{
+  "session_prompt": "What should persist from this week?",
+  "observations": [
+    "The architecture conversation improved once the orchestrator conflict was named.",
+    "Useful automation should reduce operator scheduling burden.",
+    "A scorecard is only useful when it measures artifact quality, not existence."
+  ],
+  "prior_patterns": [
+    "Prefer one source of truth over several compensating monitors.",
+    "Protect public sends and durable memory behind explicit gates."
+  ]
+}
+

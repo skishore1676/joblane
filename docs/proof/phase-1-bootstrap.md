@@ -17,6 +17,7 @@ Current proof commands:
 ```bash
 make check
 python3 -m joblane.cli run-all --root state/dev
+python3 -m joblane.cli run-all --fixtures-dir lanes --root state/dev-fixtures
 python3 -m joblane.cli render --root state/dev
 python3 -m joblane.cli doctor --root state/dev
 python3 -m joblane.cli scorecard --root state/dev

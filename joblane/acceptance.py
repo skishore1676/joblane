@@ -75,6 +75,7 @@ def _check_fitness(contents: list[dict[str, Any]], evidence: list[str], gaps: li
         lambda c: _nonempty_text(c.get("today"))
         and _nonempty_list(c.get("main_lifts"), min_len=3)
         and _nonempty_text(c.get("parsed_log_candidate"))
+        and _nonempty_list(c.get("structured_log"), min_len=1)
         and _nonempty_text(c.get("candidate_id"))
         and isinstance(c.get("progression_checks"), list)
         and c.get("durable_write_requires_gate") is True,
@@ -104,10 +105,12 @@ def _check_chief_of_staff(contents: list[dict[str, Any]], evidence: list[str], g
     plan = _has_one(
         contents,
         lambda c: c.get("shape") == "morning plan"
+        and _nonempty_list(c.get("time_blocks"), min_len=1)
         and _nonempty_list(c.get("delegate"), min_len=1)
         and _nonempty_list(c.get("push"), min_len=1)
         and _nonempty_list(c.get("decline"), min_len=1)
         and _nonempty_list(c.get("commitments"), min_len=2)
+        and _nonempty_text(c.get("rationale"))
         and isinstance(c.get("recall"), dict)
     )
     if plan:
@@ -121,6 +124,7 @@ def _check_reflection(contents: list[dict[str, Any]], evidence: list[str], gaps:
         contents,
         lambda c: _nonempty_text(c.get("candidate_id"))
         and _nonempty_text(c.get("prompt"))
+        and _nonempty_list(c.get("themes"), min_len=1)
         and isinstance(c.get("recall"), dict)
         and c.get("durable_write_requires_gate") is True,
     )
@@ -143,4 +147,3 @@ def _check_experiment(contents: list[dict[str, Any]], evidence: list[str], gaps:
         evidence.append("experiment packet is approve/skip, minimal, and failure-aware")
     else:
         gaps.append("experiment artifact lacks minimal approve/skip failure-aware shape")
-
