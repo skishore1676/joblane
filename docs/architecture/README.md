@@ -9,6 +9,7 @@ JobLane has six stable nouns:
 - **Memory**: fast episodic records plus slow gated durable knowledge.
 - **Companion Session**: bounded human/front-door conversation attached to a lane run.
 - **Surface**: projection/input channel, never state.
+- **Surface Inbox**: durable input provenance for external adapters.
 
 Providers are workers. Control is a steering layer. OpenClaw is a front door or
 worker unless a specific workflow elects it as orchestrator of record.
@@ -23,6 +24,7 @@ worker unless a specific workflow elects it as orchestrator of record.
 | Multi-turn interaction | Companion session backed by ledger |
 | Chat/session labor | Provider/front door |
 | Operator views | Surfaces |
+| External input provenance | Surface inbox |
 | Safe steering | Control |
 
 ## One-Orchestrator Rule
@@ -56,3 +58,17 @@ The session transcript and turn count live in the ledger. The front door may be
 OpenClaw, a terminal, Telegram, Obsidian, Apple Notes, Apple Messages, or another
 surface. The rule does not change: surfaces and workers may suggest durable
 state, but only gate validation can promote it.
+
+## Surface Inbox
+
+Adapters should stay thin. They translate an external event into one of three
+generic intents:
+
+- `companion_turn`: append a human/front-door turn to an active session.
+- `frontdoor_packet`: submit observations and proposed durable memories.
+- `lane_run`: launch a lane with a typed input packet.
+
+The ledger records `surface`, `external_id`, `intent`, payload, status, and
+routed result before any effect is considered. Duplicate delivery with the same
+`surface` and `external_id` returns the original result instead of double-running
+the workflow.

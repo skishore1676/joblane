@@ -12,6 +12,7 @@ from .runtime import JobLaneRuntime
 from .scorecard import Scorecard
 from .skill_export import export_openclaw_skills, install_openclaw_skills
 from .surfaces import MarkdownSurface
+from .surface_inbox import ingest_surface_packet
 
 
 def main() -> int:
@@ -72,6 +73,10 @@ def main() -> int:
     ingest = sub.add_parser("ingest-frontdoor")
     ingest.add_argument("--root", dest="root_override")
     ingest.add_argument("--file", help="JSON packet file; stdin when omitted")
+
+    ingest_surface = sub.add_parser("ingest-surface")
+    ingest_surface.add_argument("--root", dest="root_override")
+    ingest_surface.add_argument("--file", help="JSON packet file; stdin when omitted")
 
     export = sub.add_parser("export-openclaw-skills")
     export.add_argument("--lanes-root", default="lanes")
@@ -179,6 +184,10 @@ def main() -> int:
         elif args.cmd == "ingest-frontdoor":
             raw = Path(args.file).read_text(encoding="utf-8") if args.file else sys.stdin.read()
             result = ingest_frontdoor_packet(rt.ledger, json.loads(raw))
+            print(json.dumps(result.__dict__, indent=2, sort_keys=True))
+        elif args.cmd == "ingest-surface":
+            raw = Path(args.file).read_text(encoding="utf-8") if args.file else sys.stdin.read()
+            result = ingest_surface_packet(rt, json.loads(raw))
             print(json.dumps(result.__dict__, indent=2, sort_keys=True))
         elif args.cmd == "export-openclaw-skills":
             paths = export_openclaw_skills(lanes_root=args.lanes_root, out_dir=args.out_dir)

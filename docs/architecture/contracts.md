@@ -55,6 +55,21 @@ or until its turn budget is exhausted.
 A surface may publish a view and ingest human input. It must not authorize an
 effect without gate validation and must not become state.
 
+## Surface Inbox
+
+External adapters submit typed packets to the surface inbox. Each packet needs a
+`surface`, an idempotency `external_id`, an `intent`, and an object payload. The
+current generic intents are:
+
+- `companion_turn`
+- `frontdoor_packet`
+- `lane_run`
+
+The inbox records accepted and rejected packets. It deduplicates by
+`surface + external_id` so retries do not double-run a lane or duplicate a
+companion turn. Routing a packet may create runs, fast memory, candidates, or
+gates, but it may not perform live external effects.
+
 ## Provider
 
 A provider returns structured work for a role. A provider may be deterministic,

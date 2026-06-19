@@ -23,6 +23,24 @@ JobLane records observations as fast memory. Proposed durable memories become
 candidates behind a human gate. The front door cannot directly approve, publish,
 or mutate slow memory.
 
+OpenClaw can also enter through the generic surface inbox when it is acting like
+an external channel rather than a lane worker:
+
+```json
+{
+  "surface": "openclaw",
+  "external_id": "session-123-turn-7",
+  "intent": "companion_turn",
+  "payload": {
+    "session_id": "session:...",
+    "message": "Remember the operating lesson from this turn."
+  }
+}
+```
+
+The inbox gives OpenClaw the same idempotency and provenance contract as
+Obsidian, Telegram, Apple Notes, or Apple Messages.
+
 Generate or install OpenClaw skills with:
 
 ```bash

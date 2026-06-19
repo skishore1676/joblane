@@ -129,6 +129,18 @@ class Ledger:
                 response_json TEXT NOT NULL,
                 created_at TEXT DEFAULT CURRENT_TIMESTAMP
             );
+            CREATE TABLE IF NOT EXISTS surface_inbox (
+                packet_id TEXT PRIMARY KEY,
+                surface TEXT NOT NULL,
+                external_id TEXT NOT NULL,
+                lane_id TEXT,
+                intent TEXT NOT NULL,
+                payload_json TEXT NOT NULL,
+                status TEXT NOT NULL,
+                result_json TEXT NOT NULL,
+                created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE(surface, external_id)
+            );
             """
         )
         self.conn.commit()
@@ -237,6 +249,7 @@ class Ledger:
             "surface_refs",
             "companion_sessions",
             "companion_turns",
+            "surface_inbox",
         }:
             raise ValueError(f"unknown table: {table}")
         return list(self.conn.execute(f"SELECT * FROM {table} ORDER BY rowid"))
@@ -254,6 +267,7 @@ class Ledger:
             "surface_refs",
             "companion_sessions",
             "companion_turns",
+            "surface_inbox",
         ]
         return {
             table: int(self.conn.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0])
@@ -382,5 +396,60 @@ class Ledger:
             WHERE session_id = ?
             """,
             (session_id,),
+        )
+        self.conn.commit()
+
+    def get_surface_packet(self, *, surface: str, external_id: str) -> sqlite3.Row | None:
+        return self.conn.execute(
+            """
+            SELECT * FROM surface_inbox
+            WHERE surface = ? AND external_id = ?
+            """,
+            (surface, external_id),
+        ).fetchone()
+
+    def put_surface_packet(
+        self,
+        *,
+        packet_id: str,
+        surface: str,
+        external_id: str,
+        lane_id: str | None,
+        intent: str,
+        payload: dict[str, Any],
+    ) -> None:
+        self.conn.execute(
+            """
+            INSERT INTO surface_inbox
+            (packet_id, surface, external_id, lane_id, intent, payload_json, status, result_json)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                packet_id,
+                surface,
+                external_id,
+                lane_id,
+                intent,
+                json.dumps(payload, sort_keys=True),
+                "received",
+                "{}",
+            ),
+        )
+        self.conn.commit()
+
+    def update_surface_packet(
+        self,
+        *,
+        packet_id: str,
+        status: str,
+        result: dict[str, Any],
+    ) -> None:
+        self.conn.execute(
+            """
+            UPDATE surface_inbox
+            SET status = ?, result_json = ?
+            WHERE packet_id = ?
+            """,
+            (status, json.dumps(result, sort_keys=True), packet_id),
         )
         self.conn.commit()

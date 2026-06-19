@@ -23,6 +23,10 @@ ledger-backed conversation attached to a lane run: turns can write fast memory
 and propose slow memory, but durable promotion still requires the same
 content-bound gate path as any other lane effect.
 
+External systems enter through the surface inbox. Obsidian, Telegram, Apple
+Notes, Apple Messages, OpenClaw, or future adapters can submit the same typed
+packet shape; the ledger records input provenance before routing the work.
+
 ## Current Tracer Bullets
 
 The first repo slice proves six Jobs at fixture level:
@@ -47,6 +51,7 @@ python3 -m joblane.cli run public_presence
 python3 -m joblane.cli run fitness --input lanes/fitness/fixtures/sample.json
 python3 -m joblane.cli companion-start reflection
 python3 -m joblane.cli companion-turn <session_id> --message "Remember that proof beats vibes."
+python3 -m joblane.cli ingest-surface --file /path/to/surface-packet.json
 python3 -m joblane.cli decide <run_id> <gate_id> approve
 python3 -m joblane.cli companion-close <session_id>
 python3 -m joblane.cli run-all --fixtures-dir lanes
