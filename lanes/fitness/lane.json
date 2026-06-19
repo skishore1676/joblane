@@ -7,5 +7,6 @@
   "risk_class": "reversible",
   "live_effects": false,
   "schedule": {"kind": "manual"},
+  "allowed_control_actions": ["run_now", "park"],
   "description": "In-gym coaching and one-message workout logging into gated body memory."
 }

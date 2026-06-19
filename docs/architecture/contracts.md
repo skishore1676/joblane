@@ -106,5 +106,7 @@ valid result and must not be rerolled.
 
 ## Control
 
-Control reads ledger state and writes validated intents. It never mutates
-workflow state directly and never bypasses gates.
+Control reads ledger state and writes validated intents. Each lane declares
+`allowed_control_actions` in `lane.json`; unknown actions fail closed. A control
+intent may target a lane or a specific run owned by that lane. Control never
+mutates workflow state directly and never bypasses gates.

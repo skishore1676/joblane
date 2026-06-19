@@ -141,6 +141,16 @@ class Ledger:
                 created_at TEXT DEFAULT CURRENT_TIMESTAMP,
                 UNIQUE(surface, external_id)
             );
+            CREATE TABLE IF NOT EXISTS control_intents (
+                intent_id TEXT PRIMARY KEY,
+                lane_id TEXT NOT NULL,
+                action TEXT NOT NULL,
+                run_id TEXT,
+                status TEXT NOT NULL,
+                note TEXT NOT NULL,
+                result_json TEXT NOT NULL,
+                created_at TEXT DEFAULT CURRENT_TIMESTAMP
+            );
             """
         )
         self.conn.commit()
@@ -250,6 +260,7 @@ class Ledger:
             "companion_sessions",
             "companion_turns",
             "surface_inbox",
+            "control_intents",
         }:
             raise ValueError(f"unknown table: {table}")
         return list(self.conn.execute(f"SELECT * FROM {table} ORDER BY rowid"))
@@ -268,6 +279,7 @@ class Ledger:
             "companion_sessions",
             "companion_turns",
             "surface_inbox",
+            "control_intents",
         ]
         return {
             table: int(self.conn.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0])
@@ -292,10 +304,21 @@ class Ledger:
                 """
             )
         ]
+        intents = [
+            dict(row)
+            for row in self.conn.execute(
+                """
+                SELECT * FROM control_intents
+                WHERE status = 'pending'
+                ORDER BY rowid
+                """
+            )
+        ]
         return {
             "runs": runs,
             "waiting_gates": waiting,
             "active_companion_sessions": sessions,
+            "pending_control_intents": intents,
             "counts": self.counts(),
         }
 
@@ -451,5 +474,34 @@ class Ledger:
             WHERE packet_id = ?
             """,
             (status, json.dumps(result, sort_keys=True), packet_id),
+        )
+        self.conn.commit()
+
+    def put_control_intent(
+        self,
+        *,
+        intent_id: str,
+        lane_id: str,
+        action: str,
+        run_id: str | None = None,
+        note: str = "",
+        status: str = "pending",
+        result: dict[str, Any] | None = None,
+    ) -> None:
+        self.conn.execute(
+            """
+            INSERT INTO control_intents
+            (intent_id, lane_id, action, run_id, status, note, result_json)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                intent_id,
+                lane_id,
+                action,
+                run_id,
+                status,
+                note,
+                json.dumps(result or {}, sort_keys=True),
+            ),
         )
         self.conn.commit()

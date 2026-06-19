@@ -59,6 +59,8 @@ python3 -m joblane.cli board
 python3 -m joblane.cli due
 python3 -m joblane.cli tick --fixtures-dir lanes
 python3 -m joblane.cli providers --policy deployments/local.example/provider-policy.json
+python3 -m joblane.cli control-actions
+python3 -m joblane.cli control-intent experiment park
 python3 -m joblane.cli doctor
 python3 -m joblane.cli scorecard
 python3 -m joblane.cli proof

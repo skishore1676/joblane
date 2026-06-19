@@ -13,6 +13,7 @@ What exists:
 - approved-gate effect bridge for local draft staging and gated memory promotion
 - one-shot deployment runner for due lane packs and local surface rendering
 - lane-local provider defaults plus deployment provider-policy overrides
+- generic Control Tower action allowlists and validated control intents
 
 Current proof commands:
 
@@ -26,6 +27,7 @@ python3 -m joblane.cli scorecard --root state/dev
 python3 -m joblane.cli due --root state/dev
 python3 -m joblane.cli tick --fixtures-dir lanes --root state/dev
 python3 -m joblane.cli providers --policy deployments/local.example/provider-policy.json
+python3 -m joblane.cli control-actions --root state/dev
 python3 -m joblane.cli proof --root state/proof --output out/proof/joblane-proof.json
 python3 -m joblane.cli export-openclaw-skills
 ```

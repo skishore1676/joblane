@@ -5,6 +5,7 @@ import json
 import sys
 from pathlib import Path
 
+from .control import ControlTower
 from .doctor import Doctor
 from .frontdoor import ingest_frontdoor_packet
 from .proof import build_proof_packet
@@ -82,6 +83,18 @@ def main() -> int:
     providers.add_argument("--root", dest="root_override")
     providers.add_argument("--lanes-root", default="lanes")
     providers.add_argument("--policy", help="deployment provider-policy.json")
+
+    control_actions = sub.add_parser("control-actions")
+    control_actions.add_argument("--root", dest="root_override")
+    control_actions.add_argument("--lanes-root", default="lanes")
+
+    control_intent = sub.add_parser("control-intent")
+    control_intent.add_argument("lane_id")
+    control_intent.add_argument("action")
+    control_intent.add_argument("--root", dest="root_override")
+    control_intent.add_argument("--lanes-root", default="lanes")
+    control_intent.add_argument("--run-id")
+    control_intent.add_argument("--note", default="")
 
     tick = sub.add_parser("tick")
     tick.add_argument("--root", dest="root_override")
@@ -216,6 +229,27 @@ def main() -> int:
                     resolved_provider_report(
                         lanes_root=args.lanes_root,
                         policy_path=args.policy,
+                    ),
+                    indent=2,
+                    sort_keys=True,
+                )
+            )
+        elif args.cmd == "control-actions":
+            print(
+                json.dumps(
+                    ControlTower(rt.ledger, lanes_root=args.lanes_root).lane_actions(),
+                    indent=2,
+                    sort_keys=True,
+                )
+            )
+        elif args.cmd == "control-intent":
+            print(
+                json.dumps(
+                    ControlTower(rt.ledger, lanes_root=args.lanes_root).submit_intent(
+                        lane_id=args.lane_id,
+                        action=args.action,
+                        run_id=args.run_id,
+                        note=args.note,
                     ),
                     indent=2,
                     sort_keys=True,

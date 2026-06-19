@@ -74,6 +74,14 @@ class MarkdownSurface:
                 )
         else:
             lines.append("- No active companion sessions.")
+        lines.extend(["", "## Pending Control Intents", ""])
+        intents = status.get("pending_control_intents", [])
+        if intents:
+            for item in intents:
+                target = f" for `{item['run_id']}`" if item.get("run_id") else ""
+                lines.append(f"- `{item['action']}` on `{item['lane_id']}`{target}: {item['note']}")
+        else:
+            lines.append("- No pending control intents.")
         lines.extend(["", "## Schedule Due", ""])
         due_rows = [item for item in due if item["due"]]
         if due_rows:

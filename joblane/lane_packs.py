@@ -21,6 +21,7 @@ class LanePack:
     live_effects: bool
     description: str
     schedule: ScheduleSpec
+    allowed_control_actions: tuple[str, ...]
     providers: LaneProviderSpec
     workflow: WorkflowSpec
     path: Path
@@ -45,6 +46,7 @@ def load_lane_pack(path: Path) -> LanePack:
         "live_effects",
         "description",
         "schedule",
+        "allowed_control_actions",
     }
     missing = sorted(required - raw.keys())
     if missing:
@@ -73,6 +75,9 @@ def load_lane_pack(path: Path) -> LanePack:
         raise LanePackError(f"{workflow_path} orchestrator must match lane.json")
     if workflow.live_effects or bool(raw["live_effects"]):
         raise LanePackError(f"{path} may not enable live effects in the default lane pack")
+    raw_actions = raw["allowed_control_actions"]
+    if not isinstance(raw_actions, list) or not all(isinstance(action, str) for action in raw_actions):
+        raise LanePackError(f"{meta_path} allowed_control_actions must be a list of strings")
     try:
         schedule = parse_schedule(raw["schedule"])
     except ValueError as exc:
@@ -91,6 +96,7 @@ def load_lane_pack(path: Path) -> LanePack:
         live_effects=bool(raw["live_effects"]),
         description=str(raw["description"]),
         schedule=schedule,
+        allowed_control_actions=tuple(raw_actions),
         providers=providers,
         workflow=workflow,
         path=path,

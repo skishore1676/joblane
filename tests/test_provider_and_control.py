@@ -5,7 +5,7 @@ import unittest
 from pathlib import Path
 
 from joblane.contracts import ProviderResult
-from joblane.control import ControlTower
+from joblane.control import ControlIntentError, ControlTower
 from joblane.providers import DeterministicProvider, FailoverProvider, OpenClawProvider, ProviderRequest
 from joblane.runtime import JobLaneRuntime
 
@@ -58,6 +58,35 @@ class ProviderAndControlTest(unittest.TestCase):
                 tower = ControlTower(rt.ledger)
                 self.assertEqual(tower.summary()["waiting"], 1)
                 self.assertEqual(tower.needs_attention()[0]["gate_id"], "approve_or_skip")
+            finally:
+                rt.close()
+
+    def test_control_tower_records_allowed_intent_only(self) -> None:
+        repo = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as tmp:
+            rt = JobLaneRuntime(Path(tmp))
+            try:
+                run_id = rt.run_lane("experiment")
+                tower = ControlTower(rt.ledger, lanes_root=repo / "lanes")
+                actions = tower.lane_actions()
+                self.assertTrue(any(row["lane_id"] == "experiment" for row in actions))
+
+                intent = tower.submit_intent(
+                    lane_id="experiment",
+                    action="park",
+                    run_id=run_id,
+                    note="operator wants to pause this packet",
+                )
+                self.assertEqual(intent["status"], "pending")
+                self.assertEqual(rt.status()["counts"]["control_intents"], 1)
+                self.assertEqual(rt.status()["pending_control_intents"][0]["action"], "park")
+
+                with self.assertRaises(ControlIntentError):
+                    tower.submit_intent(lane_id="experiment", action="publish_live")
+
+                other_run = rt.run_lane("trading_intel")
+                with self.assertRaises(ControlIntentError):
+                    tower.submit_intent(lane_id="experiment", action="park", run_id=other_run)
             finally:
                 rt.close()
 

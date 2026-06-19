@@ -101,3 +101,10 @@ Deployments bind those actors to real workers in `provider-policy.json`.
 `joblane providers` prints the resolved provider and failover chain for every
 lane actor. This keeps model/runtime choices out of workflow definitions and
 lets an adopter flip workers without editing lane content.
+
+## Control Tower
+
+Control Tower is the generic cockpit read/write layer. It reads ledger status,
+shows waiting gates and allowed actions, and writes `control_intents` after
+checking each lane's `allowed_control_actions`. It does not directly cancel,
+resume, approve, publish, send, or run live effects.

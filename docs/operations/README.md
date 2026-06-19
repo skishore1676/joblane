@@ -14,6 +14,8 @@ python3 -m joblane.cli board --root state/local
 python3 -m joblane.cli due --root state/local
 python3 -m joblane.cli tick --fixtures-dir lanes --root state/local
 python3 -m joblane.cli providers --policy deployments/local.example/provider-policy.json --root state/local
+python3 -m joblane.cli control-actions --root state/local
+python3 -m joblane.cli control-intent experiment park --root state/local
 python3 -m joblane.cli decide <run_id> <gate_id> approve --root state/local
 python3 -m joblane.cli companion-close <session_id> --root state/local
 python3 -m joblane.cli status --root state/local
@@ -69,3 +71,12 @@ python3 -m joblane.cli providers --policy deployments/local.example/provider-pol
 
 The command is read-only. It lets a deployment flip workers without editing lane
 packs.
+
+Use Control Tower commands to inspect and record operator intents:
+
+```bash
+python3 -m joblane.cli control-actions
+python3 -m joblane.cli control-intent experiment park --note "pause this packet"
+```
+
+Control intents are ledger rows. They do not execute the action directly.

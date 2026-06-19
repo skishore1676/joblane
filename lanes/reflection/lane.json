@@ -7,5 +7,6 @@
   "risk_class": "reversible",
   "live_effects": false,
   "schedule": {"kind": "weekly", "days": ["fri"], "time": "16:00"},
+  "allowed_control_actions": ["run_now", "park", "cancel"],
   "description": "Memory-backed reflection with durable takeaways promoted only through a gate."
 }

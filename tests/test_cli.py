@@ -129,6 +129,48 @@ class CliTest(unittest.TestCase):
             self.assertIn("chief_of_staff", due_ids)
             self.assertIn("reflection", due_ids)
 
+    def test_control_intent_cli(self) -> None:
+        repo = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as tmp:
+            actions = json.loads(
+                subprocess.run(
+                    [
+                        sys.executable,
+                        "-m",
+                        "joblane.cli",
+                        "control-actions",
+                        "--lanes-root",
+                        str(repo / "lanes"),
+                        "--root",
+                        tmp,
+                    ],
+                    check=True,
+                    capture_output=True,
+                    text=True,
+                ).stdout
+            )
+            self.assertTrue(any(row["lane_id"] == "experiment" for row in actions))
+            intent = json.loads(
+                subprocess.run(
+                    [
+                        sys.executable,
+                        "-m",
+                        "joblane.cli",
+                        "control-intent",
+                        "experiment",
+                        "park",
+                        "--lanes-root",
+                        str(repo / "lanes"),
+                        "--root",
+                        tmp,
+                    ],
+                    check=True,
+                    capture_output=True,
+                    text=True,
+                ).stdout
+            )
+            self.assertEqual(intent["status"], "pending")
+
 
 if __name__ == "__main__":
     unittest.main()
