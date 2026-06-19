@@ -7,6 +7,7 @@ from pathlib import Path
 
 from .doctor import Doctor
 from .frontdoor import ingest_frontdoor_packet
+from .proof import build_proof_packet
 from .runtime import JobLaneRuntime
 from .scorecard import Scorecard
 from .skill_export import export_openclaw_skills
@@ -54,10 +55,25 @@ def main() -> int:
     export.add_argument("--lanes-root", default="lanes")
     export.add_argument("--out-dir", default="out/openclaw-skills")
 
+    proof = sub.add_parser("proof")
+    proof.add_argument("--root", default="state/proof")
+    proof.add_argument("--lanes-root", default="lanes")
+    proof.add_argument("--output", default="out/proof/joblane-proof.json")
+
     args = parser.parse_args()
     root = getattr(args, "root_override", None) or args.root
     rt = JobLaneRuntime(root)
     try:
+        if args.cmd == "proof":
+            # Build proof in an isolated runtime owned by the proof helper.
+            rt.close()
+            path = build_proof_packet(
+                root=args.root,
+                lanes_root=args.lanes_root,
+                output=args.output,
+            )
+            print(json.dumps({"proof": str(path)}, indent=2))
+            return 0
         if args.cmd == "run":
             run_id = rt.run_lane(args.lane_id)
             print(run_id)

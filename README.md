@@ -43,6 +43,7 @@ python3 -m joblane.cli decide <run_id> <gate_id> approve
 python3 -m joblane.cli run-all
 python3 -m joblane.cli doctor
 python3 -m joblane.cli scorecard
+python3 -m joblane.cli proof
 python3 -m joblane.cli export-openclaw-skills
 python3 -m joblane.cli status
 ```

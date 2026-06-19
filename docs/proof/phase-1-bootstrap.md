@@ -20,6 +20,7 @@ python3 -m joblane.cli run-all --root state/dev
 python3 -m joblane.cli render --root state/dev
 python3 -m joblane.cli doctor --root state/dev
 python3 -m joblane.cli scorecard --root state/dev
+python3 -m joblane.cli proof --root state/proof --output out/proof/joblane-proof.json
 python3 -m joblane.cli export-openclaw-skills
 ```
 
