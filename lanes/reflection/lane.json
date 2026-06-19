@@ -1,0 +1,11 @@
+{
+  "id": "reflection",
+  "job": "E",
+  "title": "Reflection",
+  "mode": "companion",
+  "orchestrator": "joblane",
+  "risk_class": "reversible",
+  "live_effects": false,
+  "description": "Memory-backed reflection with durable takeaways promoted only through a gate."
+}
+

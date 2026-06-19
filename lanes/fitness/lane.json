@@ -1,0 +1,11 @@
+{
+  "id": "fitness",
+  "job": "B",
+  "title": "Fitness",
+  "mode": "companion",
+  "orchestrator": "joblane",
+  "risk_class": "reversible",
+  "live_effects": false,
+  "description": "In-gym coaching and one-message workout logging into gated body memory."
+}
+

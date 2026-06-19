@@ -1,0 +1,17 @@
+{
+  "deployment_id": "local.example",
+  "ledger": "state/local/ledger.sqlite3",
+  "surfaces": {
+    "markdown": "state/local/surfaces/markdown",
+    "telegram_sandbox": "state/local/outbox/telegram.jsonl"
+  },
+  "providers": {
+    "default": "deterministic",
+    "openclaw": {
+      "agent": "main",
+      "trusted_input_only": true
+    }
+  },
+  "live_effects_enabled": false
+}
+

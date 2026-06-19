@@ -1,0 +1,11 @@
+{
+  "id": "public_presence",
+  "job": "A",
+  "title": "Public Presence",
+  "mode": "workflow",
+  "orchestrator": "joblane",
+  "risk_class": "external_reversible",
+  "live_effects": false,
+  "description": "Draft public writing packets with human taste gates and no live publish by default."
+}
+

@@ -1,0 +1,11 @@
+{
+  "id": "chief_of_staff",
+  "job": "D",
+  "title": "Chief of Staff",
+  "mode": "companion",
+  "orchestrator": "joblane",
+  "risk_class": "reversible",
+  "live_effects": false,
+  "description": "Morning shape-mode with delegate, push, and decline calls grounded in intentions."
+}
+
