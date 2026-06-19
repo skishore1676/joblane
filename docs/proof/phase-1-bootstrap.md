@@ -18,6 +18,7 @@ make check
 python3 -m joblane.cli run-all --root state/dev
 python3 -m joblane.cli render --root state/dev
 python3 -m joblane.cli doctor --root state/dev
+python3 -m joblane.cli export-openclaw-skills
 ```
 
 Protected-gate statement:
@@ -27,4 +28,3 @@ Protected-gate statement:
 - no broker/trading mutation
 - no auth/secret mutation
 - no oldmac cutover
-

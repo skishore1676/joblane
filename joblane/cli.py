@@ -2,10 +2,13 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from pathlib import Path
 
 from .doctor import Doctor
+from .frontdoor import ingest_frontdoor_packet
 from .runtime import JobLaneRuntime
+from .skill_export import export_openclaw_skills
 from .surfaces import MarkdownSurface
 
 
@@ -30,6 +33,14 @@ def main() -> int:
     doctor = sub.add_parser("doctor")
     doctor.add_argument("--root", dest="root_override")
     doctor.add_argument("--lanes-root", default="lanes")
+
+    ingest = sub.add_parser("ingest-frontdoor")
+    ingest.add_argument("--root", dest="root_override")
+    ingest.add_argument("--file", help="JSON packet file; stdin when omitted")
+
+    export = sub.add_parser("export-openclaw-skills")
+    export.add_argument("--lanes-root", default="lanes")
+    export.add_argument("--out-dir", default="out/openclaw-skills")
 
     args = parser.parse_args()
     root = getattr(args, "root_override", None) or args.root
@@ -58,6 +69,13 @@ def main() -> int:
                 )
             )
             return 0 if report.ok else 1
+        elif args.cmd == "ingest-frontdoor":
+            raw = Path(args.file).read_text(encoding="utf-8") if args.file else sys.stdin.read()
+            result = ingest_frontdoor_packet(rt.ledger, json.loads(raw))
+            print(json.dumps(result.__dict__, indent=2, sort_keys=True))
+        elif args.cmd == "export-openclaw-skills":
+            paths = export_openclaw_skills(lanes_root=args.lanes_root, out_dir=args.out_dir)
+            print(json.dumps([str(path) for path in paths], indent=2))
         return 0
     finally:
         rt.close()
