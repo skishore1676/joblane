@@ -1,0 +1,21 @@
+{
+  "schema": "joblane.workflow.v1",
+  "id": "public_presence",
+  "version": "0.1.0",
+  "orchestrator": "joblane",
+  "stages": [
+    {"id": "collect_context", "kind": "fixture_or_provider"},
+    {"id": "draft_packet", "kind": "provider"},
+    {"id": "taste_gate", "kind": "human_gate"},
+    {"id": "stage_public_draft", "kind": "sandbox_effect"}
+  ],
+  "gates": [
+    {
+      "id": "taste_gate",
+      "allowed_decisions": ["approve", "revise", "park", "reject"],
+      "content_bound": true
+    }
+  ],
+  "live_effects": false
+}
+

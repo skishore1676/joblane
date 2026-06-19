@@ -6,6 +6,13 @@ The ledger records execution truth: runs, artifacts, gates, decisions, receipts,
 memory, provider calls, and surface references. Deleting rendered surfaces must
 not delete state.
 
+## Workflow
+
+A lane pack owns a `workflow.json` file. The default schema is
+`joblane.workflow.v1`: stable id, version, orchestrator, stages, gates, and
+live-effect declaration. A gated workflow must declare content-bound gates with
+allowed decisions. Default lane packs may not enable live effects.
+
 ## Gate
 
 A valid gate decision must:

@@ -1,0 +1,22 @@
+{
+  "schema": "joblane.workflow.v1",
+  "id": "fitness",
+  "version": "0.1.0",
+  "orchestrator": "joblane",
+  "stages": [
+    {"id": "recall_gym", "kind": "memory_recall"},
+    {"id": "plan_session", "kind": "companion"},
+    {"id": "parse_log", "kind": "companion"},
+    {"id": "log_gate", "kind": "human_gate"},
+    {"id": "promote_gym_memory", "kind": "memory_effect"}
+  ],
+  "gates": [
+    {
+      "id": "log_gate",
+      "allowed_decisions": ["approve", "revise", "skip"],
+      "content_bound": true
+    }
+  ],
+  "live_effects": false
+}
+

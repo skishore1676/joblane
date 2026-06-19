@@ -1,0 +1,22 @@
+{
+  "schema": "joblane.workflow.v1",
+  "id": "reflection",
+  "version": "0.1.0",
+  "orchestrator": "joblane",
+  "stages": [
+    {"id": "write_fast_observation", "kind": "memory_fast"},
+    {"id": "recall_weekly", "kind": "memory_recall"},
+    {"id": "propose_takeaway", "kind": "companion"},
+    {"id": "memory_gate", "kind": "human_gate"},
+    {"id": "promote_reflection_memory", "kind": "memory_effect"}
+  ],
+  "gates": [
+    {
+      "id": "memory_gate",
+      "allowed_decisions": ["approve", "reject", "revise"],
+      "content_bound": true
+    }
+  ],
+  "live_effects": false
+}
+

@@ -1,0 +1,21 @@
+{
+  "schema": "joblane.workflow.v1",
+  "id": "chief_of_staff",
+  "version": "0.1.0",
+  "orchestrator": "joblane",
+  "stages": [
+    {"id": "recall_intentions", "kind": "memory_recall"},
+    {"id": "shape_day", "kind": "companion"},
+    {"id": "commitment_gate", "kind": "human_gate"},
+    {"id": "record_commitments", "kind": "sandbox_effect"}
+  ],
+  "gates": [
+    {
+      "id": "commitment_gate",
+      "allowed_decisions": ["approve", "revise", "park"],
+      "content_bound": true
+    }
+  ],
+  "live_effects": false
+}
+

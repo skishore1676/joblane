@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from .contracts import JobArea, Orchestrator, RiskClass
+from .workflows import WorkflowSpec, load_workflow
 
 
 @dataclass(frozen=True)
@@ -17,6 +18,7 @@ class LanePack:
     risk_class: RiskClass
     live_effects: bool
     description: str
+    workflow: WorkflowSpec
     path: Path
 
 
@@ -56,6 +58,16 @@ def load_lane_pack(path: Path) -> LanePack:
             f"{meta_path} delegates orchestration to OpenClaw; add an explicit "
             "no-competing-scheduler proof before enabling."
         )
+    workflow_path = path / "workflow.json"
+    if not workflow_path.exists():
+        raise LanePackError(f"missing workflow.json: {path}")
+    workflow = load_workflow(workflow_path)
+    if workflow.workflow_id != lane_id:
+        raise LanePackError(f"{workflow_path} id must match lane {lane_id!r}")
+    if workflow.orchestrator != orchestrator:
+        raise LanePackError(f"{workflow_path} orchestrator must match lane.json")
+    if workflow.live_effects or bool(raw["live_effects"]):
+        raise LanePackError(f"{path} may not enable live effects in the default lane pack")
     return LanePack(
         lane_id=lane_id,
         job=job,
@@ -65,6 +77,7 @@ def load_lane_pack(path: Path) -> LanePack:
         risk_class=risk_class,
         live_effects=bool(raw["live_effects"]),
         description=str(raw["description"]),
+        workflow=workflow,
         path=path,
     )
 
@@ -76,4 +89,3 @@ def load_lane_packs(root: Path | str = "lanes") -> dict[str, LanePack]:
         pack = load_lane_pack(path)
         packs[pack.lane_id] = pack
     return packs
-

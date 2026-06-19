@@ -1,0 +1,20 @@
+{
+  "schema": "joblane.workflow.v1",
+  "id": "experiment",
+  "version": "0.1.0",
+  "orchestrator": "joblane",
+  "stages": [
+    {"id": "prepare_packet", "kind": "fixture_or_provider"},
+    {"id": "approve_or_skip", "kind": "human_gate"},
+    {"id": "stage_experiment_output", "kind": "sandbox_effect"}
+  ],
+  "gates": [
+    {
+      "id": "approve_or_skip",
+      "allowed_decisions": ["approve", "skip"],
+      "content_bound": true
+    }
+  ],
+  "live_effects": false
+}
+

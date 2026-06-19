@@ -1,0 +1,17 @@
+{
+  "schema": "joblane.workflow.v1",
+  "id": "trading_intel",
+  "version": "0.1.0",
+  "orchestrator": "joblane",
+  "stages": [
+    {"id": "collect_readonly_inputs", "kind": "read_only"},
+    {"id": "synthesize_health", "kind": "provider"},
+    {"id": "record_synthesis", "kind": "receipt"}
+  ],
+  "gates": [],
+  "capability_policy": {
+    "forbidden": ["submit_order", "cancel_order", "transfer_cash"]
+  },
+  "live_effects": false
+}
+
